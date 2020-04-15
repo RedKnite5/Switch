@@ -39,6 +39,7 @@ class MyWalker(ParseTreeWalker):
 
 class switchPrintListener(switchListener):
 	def __init__(self, output, ns):
+		self.st = [output]
 		self.out = output
 		self.ns = ns
 
@@ -49,11 +50,9 @@ class switchPrintListener(switchListener):
 	def enterPrim_expr(self, ctx):
 		table = str.maketrans("zZoO", "0011")
 		
-		print(ctx.getText())
-		
 		if ctx.INT() is not None:
 			num = int(ctx.INT().getText().translate(table), 2)
-			self.out += bytes(str(num), "utf-8")
+			self.st[-1] += bytes(str(num), "utf-8")
 		elif ctx.FLOAT() is not None:
 			integer, decimal = ctx.FLOAT().getText().split("d")
 			int_part = int(integer.translate(table), 2)
@@ -62,34 +61,29 @@ class switchPrintListener(switchListener):
 			for d in range(len(decimal)):
 				dec_part += float(decimal[d]) / 2**(d + 1)
 			
-			self.out += bytes(str(int_part + dec_part), "utf-8")
+			self.st[-1] += bytes(str(int_part + dec_part), "utf-8")
 			
 		elif ctx.NAME() is not None:
-		
-			print("Ctx: ", ctx)
-			print(type(ctx.parentCtx))
-			print(type(ctx.parentCtx.parentCtx))
-		
 			if False:
 				pass
 			else:
-				self.out += bytes(self.ns[ctx.getText()], "utf-8")
+				self.st[-1] += bytes(self.ns[ctx.getText()], "utf-8")
 		elif ctx.STRING() is not None:
 			nums = ctx.STRING().getText()[1:].split("s")
 			nums = [int(x.translate(table), 2) for x in nums]
 			chars = [chr(x) for x in nums]
-			self.out += bytes(f"'{''.join(chars)}'", "utf-8")
+			self.st[-1] += bytes(f"'{''.join(chars)}'", "utf-8")
 	
 	def enterCall(self, ctx):
 		self.call_start = 0
 	
 	def nextChildCall(self, ctx, child):
 		if self.call_start == 1:
-			self.out += b"("
+			self.st[-1] += b"("
 		self.call_start += 1
 	
 	def exitCall(self, ctx):
-		self.out += b")"
+		self.st[-1] += b")"
 	
 	def enterM_expr(self, ctx):
 		ops = {
@@ -98,13 +92,13 @@ class switchPrintListener(switchListener):
 			"u": "mod"
 		}
 		
-		self.out += bytes(
+		self.st[-1] += bytes(
 			ops[ctx.children[0].getText()],
 			"utf-8"
 		) + b"("
 	
 	def exitM_expr(self, ctx):
-		self.out += b")"
+		self.st[-1] += b")"
 
 	def enterAdd_sub_expr(self, ctx):
 		ops = {
@@ -112,27 +106,35 @@ class switchPrintListener(switchListener):
 			"m": "sub"
 		}
 		
-		self.out += bytes(
+		self.st[-1] += bytes(
 			ops[ctx.children[0].getText()],
 			"utf-8"
 		) + b"("
 
 	def exitAdd_sub_expr(self, ctx):
-		self.out += b")"
+		self.st[-1] += b")"
 		
 	def nextChildArgs(self, ctx, child):
 		if (
 			tuple(ctx.getChildren())[-1] != child
 			and type(child) != tree.Tree.TerminalNodeImpl
 		):
-			self.out += b","
+			self.st[-1] += b","
 
 	def enterAssignment(self, ctx):
 		if ctx.NAME():
-			print("Assign: ", ctx.NAME())
-			print("Assign info: ", ctx.expr().getText())
-			self.ns[ctx.NAME().getText()] = 0
+			self.st.append(bytearray(b""))
+	
+	def exitAssignment(self, ctx):
+		self.ns[ctx.NAME().getText()] = self.st[-1].decode("utf-8")
+		val = self.st.pop()
+		self.st[-1] += val
+	
+	
 			
+
+def run(s):
+	return eval(s)
 
 def main():
 	output = bytearray("", "utf-8")
@@ -147,6 +149,7 @@ def main():
 	walker.walk(printer, tree)
 	
 	print("Output: ", output.decode())
+	print("Run: ", run(output.decode()))
 	
 	
 	
