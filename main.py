@@ -5,36 +5,9 @@ from switchLexer import switchLexer
 from switchListener import switchListener
 from switchParser import switchParser
 import sys
-from functools import reduce
-
 from pprint import pprint
 
-def add(*args):
-	return reduce(lambda a, b: a + b, args)
 
-def less_than(*args):
-	total = []
-	for i in range(len(args)):
-		if i == len(args) - 1:
-			return all(total)
-		total.append(args[i] < args[i + 1])
-			
-
-class SwitchList(dict):
-	def __init__(self, *args):
-		super().__init__()
-		self.update(dict(enumerate(args)))
-
-class SwitchMap(dict):
-	def __init__(self, *args):
-		super().__init__()
-		
-		it = iter(args)
-		for x in it:
-			try:
-				self.update({x: next(it)})
-			except StopIteration:
-				raise ValueError("Must have an even number of items")
 
 class MyWalker(ParseTreeWalker):
 	def walk(self, listener, t):
@@ -66,6 +39,9 @@ class switchPrintListener(switchListener):
 		self.out = output
 		self.ns = ns
 		self.indent = 0
+	
+	def enterSwitch_file(self, ctx):
+		self.st[-1] += b"from switch_builtins import *\nnamespace = Namespace()\n"
 
 	def enterWhile_loop(self, ctx):
 		self.st[-1] += b"while "
@@ -80,6 +56,18 @@ class switchPrintListener(switchListener):
 	
 	def enterWhile_block(self, ctx):
 		self.indent += 1
+	
+	def exitWhile_block(self, ctx):
+		self.indent -= 1
+
+	def enterLine(self, ctx):
+		children = ctx.getChildren()
+		for child in children:
+			if isinstance(child, switchParser.ExprContext):
+				self.st[-1] += b" " * self.indent
+
+	def exitLine(self, ctx):
+		self.st[-1] += b"\n"
 		
 	def enterExpr(self, ctx):
 		#print("Text: ", ctx.getText())
@@ -107,7 +95,14 @@ class switchPrintListener(switchListener):
 			self.st[-1] += bytes(str(int_part + dec_part), "utf-8")
 			
 		elif ctx.NAME() is not None:
-			self.st[-1] += bytes(self.ns[ctx.getText()], "utf-8")
+			try:
+				self.st[-1] += bytes(self.ns[ctx.getText()], "utf-8")
+			except KeyError:
+				self.st[-1] += bytes(
+					"namespace[\""
+					+ ctx.getText()
+					+ "\"]",
+					"utf-8")
 
 		elif ctx.STRING() is not None:
 			nums = ctx.STRING().getText()[1:].split("s")
@@ -166,7 +161,7 @@ class switchPrintListener(switchListener):
 			ops[ctx.children[0].getText()],
 			"utf-8"
 		) + b"("
-	
+
 	def exitComp(self, ctx):
 		self.st[-1] += b")"
 	
@@ -182,21 +177,18 @@ class switchPrintListener(switchListener):
 			self.st.append(bytearray(b""))
 
 	def exitAssignment(self, ctx):
-		self.ns[ctx.NAME().getText()] = self.st[-1].decode("utf-8")
 		val = self.st.pop()
-		self.st[-1] += val
+		py_assign = (
+			b"namespace.walrus(\""
+			+ bytes(ctx.NAME().getText(), "utf-8")
+			+ b"\", "
+			+ val
+			+ b")"
+		)
+		self.st[-1] += py_assign
 
 	def enterAccess(self, ctx):
 		pass
-
-	def enterLine(self, ctx):
-		children = ctx.getChildren()
-		for child in children:
-			if isinstance(child, switchParser.ExprContext):
-				self.st[-1] += b" " * self.indent
-
-	def exitLine(self, ctx):
-		self.st[-1] += b"\n"
 
 
 def run(s):
@@ -223,7 +215,7 @@ def main():
 	print("Output:\n", output.decode())
 	print("\nRun: ")
 	try:
-		#exec(output.decode())
+		exec(output.decode())
 		pass
 	except Exception:
 		print("Switch Excpetion: ")
