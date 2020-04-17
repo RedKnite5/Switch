@@ -12,6 +12,29 @@ from pprint import pprint
 def add(*args):
 	return reduce(lambda a, b: a + b, args)
 
+def less_than(*args):
+	total = []
+	for i in range(len(args)):
+		if i == len(args) - 1:
+			return all(total)
+		total.append(args[i] < args[i + 1])
+			
+
+class SwitchList(dict):
+	def __init__(self, *args):
+		super().__init__()
+		self.update(dict(enumerate(args)))
+
+class SwitchMap(dict):
+	def __init__(self, *args):
+		super().__init__()
+		
+		it = iter(args)
+		for x in it:
+			try:
+				self.update({x: next(it)})
+			except StopIteration:
+				raise ValueError("Must have an even number of items")
 
 class MyWalker(ParseTreeWalker):
 	def walk(self, listener, t):
@@ -42,17 +65,37 @@ class switchPrintListener(switchListener):
 		self.st = [output]
 		self.out = output
 		self.ns = ns
+		self.indent = 0
 
+	def enterWhile_loop(self, ctx):
+		self.st[-1] += b"while "
+	
+	def enterWhile_test(self, ctx):
+		self.st.append(bytearray(b""))
+	
+	def exitWhile_test(self, ctx):
+		val = self.st.pop()
+		self.st[-1] += val
+		self.st[-1] += b":\n"
+	
+	def enterWhile_block(self, ctx):
+		self.indent += 1
+		
 	def enterExpr(self, ctx):
 		#print("Text: ", ctx.getText())
 		pass
-	
+
 	def enterPrim_expr(self, ctx):
 		table = str.maketrans("zZoO", "0011")
+		table[ord(" ")] = None
+		table[ord("\t")] = None
+		table[ord("\n")] = None
+		table[ord("\r")] = None
 		
 		if ctx.INT() is not None:
 			num = int(ctx.INT().getText().translate(table), 2)
 			self.st[-1] += bytes(str(num), "utf-8")
+
 		elif ctx.FLOAT() is not None:
 			integer, decimal = ctx.FLOAT().getText().split("d")
 			int_part = int(integer.translate(table), 2)
@@ -64,28 +107,26 @@ class switchPrintListener(switchListener):
 			self.st[-1] += bytes(str(int_part + dec_part), "utf-8")
 			
 		elif ctx.NAME() is not None:
-			if False:
-				pass
-			else:
-				self.st[-1] += bytes(self.ns[ctx.getText()], "utf-8")
+			self.st[-1] += bytes(self.ns[ctx.getText()], "utf-8")
+
 		elif ctx.STRING() is not None:
 			nums = ctx.STRING().getText()[1:].split("s")
 			nums = [int(x.translate(table), 2) for x in nums]
 			chars = [chr(x) for x in nums]
 			self.st[-1] += bytes(f"'{''.join(chars)}'", "utf-8")
-	
+
 	def enterCall(self, ctx):
 		self.call_start = 0
-	
+
 	def nextChildCall(self, ctx, child):
 		if self.call_start == 1:
 			self.st[-1] += b"("
 		self.call_start += 1
-	
+
 	def exitCall(self, ctx):
 		self.st[-1] += b")"
-	
-	def enterM_expr(self, ctx):
+
+	def enterMult(self, ctx):
 		ops = {
 			"t": "mul",
 			"v": "truediv",
@@ -96,8 +137,8 @@ class switchPrintListener(switchListener):
 			ops[ctx.children[0].getText()],
 			"utf-8"
 		) + b"("
-	
-	def exitM_expr(self, ctx):
+
+	def exitMult(self, ctx):
 		self.st[-1] += b")"
 
 	def enterAdd_sub_expr(self, ctx):
@@ -113,7 +154,22 @@ class switchPrintListener(switchListener):
 
 	def exitAdd_sub_expr(self, ctx):
 		self.st[-1] += b")"
+
+	def enterComp(self, ctx):
+		ops = {
+			"j": "less_than",
+			"g": "greater_than",
+			"q": "equal"
+		}
 		
+		self.st[-1] += bytes(
+			ops[ctx.children[0].getText()],
+			"utf-8"
+		) + b"("
+	
+	def exitComp(self, ctx):
+		self.st[-1] += b")"
+	
 	def nextChildArgs(self, ctx, child):
 		if (
 			tuple(ctx.getChildren())[-1] != child
@@ -124,32 +180,55 @@ class switchPrintListener(switchListener):
 	def enterAssignment(self, ctx):
 		if ctx.NAME():
 			self.st.append(bytearray(b""))
-	
+
 	def exitAssignment(self, ctx):
 		self.ns[ctx.NAME().getText()] = self.st[-1].decode("utf-8")
 		val = self.st.pop()
 		self.st[-1] += val
-	
-	
-			
+
+	def enterAccess(self, ctx):
+		pass
+
+	def enterLine(self, ctx):
+		children = ctx.getChildren()
+		for child in children:
+			if isinstance(child, switchParser.ExprContext):
+				self.st[-1] += b" " * self.indent
+
+	def exitLine(self, ctx):
+		self.st[-1] += b"\n"
+
 
 def run(s):
 	return eval(s)
 
 def main():
 	output = bytearray("", "utf-8")
-	namespace = {"->": "print"}
 	
+	namespace = {
+		"->": "print",
+		":": "SwitchMap",
+		"...": "SwitchList",
+	}
+
 	lexer = switchLexer(StdinStream())
 	stream = CommonTokenStream(lexer)
 	parser = switchParser(stream)
-	tree = parser.expr()
+	tree = parser.switch_file()
 	printer = switchPrintListener(output, namespace)
 	walker = MyWalker()
 	walker.walk(printer, tree)
 	
-	print("Output: ", output.decode())
-	print("Run: ", run(output.decode()))
+	print("Formal Output: ", repr(output.decode()))
+	print("Output:\n", output.decode())
+	print("\nRun: ")
+	try:
+		#exec(output.decode())
+		pass
+	except Exception:
+		print("Switch Excpetion: ")
+		raise
+	#print("Run: ", run(output.decode()))
 	
 	
 	

@@ -8,6 +8,51 @@ else:
 # This class defines a complete listener for a parse tree produced by switchParser.
 class switchListener(ParseTreeListener):
 
+    # Enter a parse tree produced by switchParser#switch_file.
+    def enterSwitch_file(self, ctx:switchParser.Switch_fileContext):
+        pass
+
+    # Exit a parse tree produced by switchParser#switch_file.
+    def exitSwitch_file(self, ctx:switchParser.Switch_fileContext):
+        pass
+
+
+    # Enter a parse tree produced by switchParser#while_loop.
+    def enterWhile_loop(self, ctx:switchParser.While_loopContext):
+        pass
+
+    # Exit a parse tree produced by switchParser#while_loop.
+    def exitWhile_loop(self, ctx:switchParser.While_loopContext):
+        pass
+
+
+    # Enter a parse tree produced by switchParser#while_test.
+    def enterWhile_test(self, ctx:switchParser.While_testContext):
+        pass
+
+    # Exit a parse tree produced by switchParser#while_test.
+    def exitWhile_test(self, ctx:switchParser.While_testContext):
+        pass
+
+
+    # Enter a parse tree produced by switchParser#while_block.
+    def enterWhile_block(self, ctx:switchParser.While_blockContext):
+        pass
+
+    # Exit a parse tree produced by switchParser#while_block.
+    def exitWhile_block(self, ctx:switchParser.While_blockContext):
+        pass
+
+
+    # Enter a parse tree produced by switchParser#line.
+    def enterLine(self, ctx:switchParser.LineContext):
+        pass
+
+    # Exit a parse tree produced by switchParser#line.
+    def exitLine(self, ctx:switchParser.LineContext):
+        pass
+
+
     # Enter a parse tree produced by switchParser#expr.
     def enterExpr(self, ctx:switchParser.ExprContext):
         pass
@@ -26,12 +71,12 @@ class switchListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by switchParser#m_expr.
-    def enterM_expr(self, ctx:switchParser.M_exprContext):
+    # Enter a parse tree produced by switchParser#mult.
+    def enterMult(self, ctx:switchParser.MultContext):
         pass
 
-    # Exit a parse tree produced by switchParser#m_expr.
-    def exitM_expr(self, ctx:switchParser.M_exprContext):
+    # Exit a parse tree produced by switchParser#mult.
+    def exitMult(self, ctx:switchParser.MultContext):
         pass
 
 
