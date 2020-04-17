@@ -4,6 +4,7 @@ from antlr4 import *
 from switchLexer import switchLexer
 from switchListener import switchListener
 from switchParser import switchParser
+
 import sys
 from pprint import pprint
 
@@ -99,9 +100,9 @@ class switchPrintListener(switchListener):
 				self.st[-1] += bytes(self.ns[ctx.getText()], "utf-8")
 			except KeyError:
 				self.st[-1] += bytes(
-					"namespace[\""
-					+ ctx.getText()
-					+ "\"]",
+					"namespace["
+					+ repr(ctx.getText())
+					+ "]",
 					"utf-8")
 
 		elif ctx.STRING() is not None:
@@ -179,9 +180,9 @@ class switchPrintListener(switchListener):
 	def exitAssignment(self, ctx):
 		val = self.st.pop()
 		py_assign = (
-			b"namespace.walrus(\""
-			+ bytes(ctx.NAME().getText(), "utf-8")
-			+ b"\", "
+			b"namespace.walrus("
+			+ bytes(repr(ctx.NAME().getText()), "utf-8")
+			+ b", "
 			+ val
 			+ b")"
 		)
