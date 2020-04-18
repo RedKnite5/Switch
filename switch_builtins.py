@@ -26,6 +26,9 @@ class SwitchMap(dict):
 def add(*args):
 	return reduce(lambda a, b: a + b, args)
 
+def sub(*args):
+	return reduce(lambda a, b: a - b, args)
+
 def mul(*args):
 	return reduce(lambda a, b: a * b, args)
 
