@@ -42,7 +42,10 @@ class switchPrintListener(switchListener):
 		self.indent = 0
 	
 	def enterSwitch_file(self, ctx):
-		self.st[-1] += b"from switch_builtins import *\nnamespace = Namespace()\n"
+		self.st[-1] += (
+			b"from switch_builtins import *\n"
+			b"namespace = Namespace()\n"
+		)
 
 	def enterWhile_loop(self, ctx):
 		self.st[-1] += b"while "
@@ -191,20 +194,20 @@ class switchPrintListener(switchListener):
 	def enterAccess(self, ctx):
 		pass
 
-
-def run(s):
-	return eval(s)
-
-def main():
+def comp(input, file=False):
 	output = bytearray("", "utf-8")
-	
+
 	namespace = {
 		"->": "print",
 		":": "SwitchMap",
 		"...": "SwitchList",
 	}
+	
+	if file:
+		lexer = switchLexer(FileStream(input))
+	else:
+		lexer = switchLexer(InputStream(input))
 
-	lexer = switchLexer(StdinStream())
 	stream = CommonTokenStream(lexer)
 	parser = switchParser(stream)
 	tree = parser.switch_file()
@@ -212,20 +215,24 @@ def main():
 	walker = MyWalker()
 	walker.walk(printer, tree)
 	
-	print("Formal Output: ", repr(output.decode()))
-	print("Output:\n", output.decode())
+	return output
+
+
+if __name__ == '__main__':
+	try:
+		assert(sys.argv[1] == "-f")
+		output = comp(sys.argv[2], True)
+	except AssertionError:
+		output = comp(sys.argv[1])
+	except IndexError:
+		pass
+
+	print("Output:\n", output.decode(), sep="")
+
 	print("\nRun: ")
 	try:
 		exec(output.decode())
-		pass
 	except Exception:
 		print("Switch Excpetion: ")
 		raise
-	#print("Run: ", run(output.decode()))
-	
-	
-	
 
-if __name__ == '__main__':
-	print("Enter text: \n")
-	main()
