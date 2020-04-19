@@ -12,39 +12,41 @@ else:
 def serializedATN():
     with StringIO() as buf:
         buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\23")
-        buf.write("o\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b")
+        buf.write("u\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b")
         buf.write("\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\4\16\t")
         buf.write("\16\4\17\t\17\3\2\3\2\7\2!\n\2\f\2\16\2$\13\2\3\2\3\2")
         buf.write("\3\3\3\3\3\3\3\4\3\4\3\4\3\5\3\5\7\5\60\n\5\f\5\16\5\63")
         buf.write("\13\5\3\5\3\5\3\6\3\6\3\6\3\6\5\6;\n\6\3\6\5\6>\n\6\3")
         buf.write("\7\3\7\3\7\3\7\3\7\3\7\3\7\5\7G\n\7\3\b\3\b\3\b\3\b\3")
         buf.write("\b\3\b\3\t\3\t\3\t\3\n\3\n\3\n\3\13\3\13\3\13\5\13X\n")
-        buf.write("\13\3\13\3\13\3\13\3\f\3\f\3\f\3\f\3\f\3\r\3\r\3\r\3\16")
-        buf.write("\3\16\3\16\7\16h\n\16\f\16\16\16k\13\16\3\17\3\17\3\17")
-        buf.write("\2\2\20\2\4\6\b\n\f\16\20\22\24\26\30\32\34\2\3\4\2\n")
-        buf.write("\n\21\23\2m\2\"\3\2\2\2\4\'\3\2\2\2\6*\3\2\2\2\b-\3\2")
-        buf.write("\2\2\n=\3\2\2\2\fF\3\2\2\2\16H\3\2\2\2\20N\3\2\2\2\22")
-        buf.write("Q\3\2\2\2\24T\3\2\2\2\26\\\3\2\2\2\30a\3\2\2\2\32d\3\2")
-        buf.write("\2\2\34l\3\2\2\2\36!\5\n\6\2\37!\5\4\3\2 \36\3\2\2\2 ")
-        buf.write("\37\3\2\2\2!$\3\2\2\2\" \3\2\2\2\"#\3\2\2\2#%\3\2\2\2")
-        buf.write("$\"\3\2\2\2%&\7\2\2\3&\3\3\2\2\2\'(\5\6\4\2()\5\b\5\2")
-        buf.write(")\5\3\2\2\2*+\7\3\2\2+,\5\f\7\2,\7\3\2\2\2-\61\7\4\2\2")
-        buf.write(".\60\5\n\6\2/.\3\2\2\2\60\63\3\2\2\2\61/\3\2\2\2\61\62")
-        buf.write("\3\2\2\2\62\64\3\2\2\2\63\61\3\2\2\2\64\65\7\5\2\2\65")
-        buf.write("\t\3\2\2\2\66\67\5\f\7\2\678\7\2\2\38>\3\2\2\29;\5\f\7")
-        buf.write("\2:9\3\2\2\2:;\3\2\2\2;<\3\2\2\2<>\7\f\2\2=\66\3\2\2\2")
-        buf.write("=:\3\2\2\2>\13\3\2\2\2?G\5\34\17\2@G\5\16\b\2AG\5\20\t")
-        buf.write("\2BG\5\22\n\2CG\5\24\13\2DG\5\26\f\2EG\5\30\r\2F?\3\2")
-        buf.write("\2\2F@\3\2\2\2FA\3\2\2\2FB\3\2\2\2FC\3\2\2\2FD\3\2\2\2")
-        buf.write("FE\3\2\2\2G\r\3\2\2\2HI\7\6\2\2IJ\5\f\7\2JK\7\r\2\2KL")
-        buf.write("\5\32\16\2LM\7\7\2\2M\17\3\2\2\2NO\7\16\2\2OP\5\32\16")
-        buf.write("\2P\21\3\2\2\2QR\7\17\2\2RS\5\32\16\2S\23\3\2\2\2TW\7")
-        buf.write("\b\2\2UX\7\23\2\2VX\5\26\f\2WU\3\2\2\2WV\3\2\2\2XY\3\2")
-        buf.write("\2\2YZ\7\r\2\2Z[\5\f\7\2[\25\3\2\2\2\\]\7\t\2\2]^\5\f")
-        buf.write("\7\2^_\7\r\2\2_`\5\32\16\2`\27\3\2\2\2ab\7\20\2\2bc\5")
-        buf.write("\32\16\2c\31\3\2\2\2di\5\f\7\2ef\7\r\2\2fh\5\f\7\2ge\3")
-        buf.write("\2\2\2hk\3\2\2\2ig\3\2\2\2ij\3\2\2\2j\33\3\2\2\2ki\3\2")
-        buf.write("\2\2lm\t\2\2\2m\35\3\2\2\2\n \"\61:=FWi")
+        buf.write("\13\3\13\3\13\3\13\3\f\3\f\3\f\3\f\3\f\3\f\7\fc\n\f\f")
+        buf.write("\f\16\ff\13\f\3\r\3\r\3\r\3\16\3\16\3\16\7\16n\n\16\f")
+        buf.write("\16\16\16q\13\16\3\17\3\17\3\17\2\2\20\2\4\6\b\n\f\16")
+        buf.write("\20\22\24\26\30\32\34\2\3\4\2\n\n\21\23\2t\2\"\3\2\2\2")
+        buf.write("\4\'\3\2\2\2\6*\3\2\2\2\b-\3\2\2\2\n=\3\2\2\2\fF\3\2\2")
+        buf.write("\2\16H\3\2\2\2\20N\3\2\2\2\22Q\3\2\2\2\24T\3\2\2\2\26")
+        buf.write("\\\3\2\2\2\30g\3\2\2\2\32j\3\2\2\2\34r\3\2\2\2\36!\5\n")
+        buf.write("\6\2\37!\5\4\3\2 \36\3\2\2\2 \37\3\2\2\2!$\3\2\2\2\" ")
+        buf.write("\3\2\2\2\"#\3\2\2\2#%\3\2\2\2$\"\3\2\2\2%&\7\2\2\3&\3")
+        buf.write("\3\2\2\2\'(\5\6\4\2()\5\b\5\2)\5\3\2\2\2*+\7\3\2\2+,\5")
+        buf.write("\f\7\2,\7\3\2\2\2-\61\7\4\2\2.\60\5\n\6\2/.\3\2\2\2\60")
+        buf.write("\63\3\2\2\2\61/\3\2\2\2\61\62\3\2\2\2\62\64\3\2\2\2\63")
+        buf.write("\61\3\2\2\2\64\65\7\5\2\2\65\t\3\2\2\2\66\67\5\f\7\2\67")
+        buf.write("8\7\2\2\38>\3\2\2\29;\5\f\7\2:9\3\2\2\2:;\3\2\2\2;<\3")
+        buf.write("\2\2\2<>\7\f\2\2=\66\3\2\2\2=:\3\2\2\2>\13\3\2\2\2?G\5")
+        buf.write("\34\17\2@G\5\16\b\2AG\5\20\t\2BG\5\22\n\2CG\5\24\13\2")
+        buf.write("DG\5\26\f\2EG\5\30\r\2F?\3\2\2\2F@\3\2\2\2FA\3\2\2\2F")
+        buf.write("B\3\2\2\2FC\3\2\2\2FD\3\2\2\2FE\3\2\2\2G\r\3\2\2\2HI\7")
+        buf.write("\6\2\2IJ\5\f\7\2JK\7\r\2\2KL\5\32\16\2LM\7\7\2\2M\17\3")
+        buf.write("\2\2\2NO\7\16\2\2OP\5\32\16\2P\21\3\2\2\2QR\7\17\2\2R")
+        buf.write("S\5\32\16\2S\23\3\2\2\2TW\7\b\2\2UX\7\23\2\2VX\5\26\f")
+        buf.write("\2WU\3\2\2\2WV\3\2\2\2XY\3\2\2\2YZ\7\r\2\2Z[\5\f\7\2[")
+        buf.write("\25\3\2\2\2\\]\7\t\2\2]^\5\f\7\2^_\7\r\2\2_d\5\f\7\2`")
+        buf.write("a\7\r\2\2ac\5\f\7\2b`\3\2\2\2cf\3\2\2\2db\3\2\2\2de\3")
+        buf.write("\2\2\2e\27\3\2\2\2fd\3\2\2\2gh\7\20\2\2hi\5\32\16\2i\31")
+        buf.write("\3\2\2\2jo\5\f\7\2kl\7\r\2\2ln\5\f\7\2mk\3\2\2\2nq\3\2")
+        buf.write("\2\2om\3\2\2\2op\3\2\2\2p\33\3\2\2\2qo\3\2\2\2rs\t\2\2")
+        buf.write("\2s\35\3\2\2\2\13 \"\61:=FWdo")
         return buf.getvalue()
 
 
@@ -727,16 +729,18 @@ class switchParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
-        def expr(self):
-            return self.getTypedRuleContext(switchParser.ExprContext,0)
+        def expr(self, i:int=None):
+            if i is None:
+                return self.getTypedRuleContexts(switchParser.ExprContext)
+            else:
+                return self.getTypedRuleContext(switchParser.ExprContext,i)
 
 
-        def ARG_DELIM(self):
-            return self.getToken(switchParser.ARG_DELIM, 0)
-
-        def args(self):
-            return self.getTypedRuleContext(switchParser.ArgsContext,0)
-
+        def ARG_DELIM(self, i:int=None):
+            if i is None:
+                return self.getTokens(switchParser.ARG_DELIM)
+            else:
+                return self.getToken(switchParser.ARG_DELIM, i)
 
         def getRuleIndex(self):
             return switchParser.RULE_access
@@ -765,7 +769,20 @@ class switchParser ( Parser ):
             self.state = 92
             self.match(switchParser.ARG_DELIM)
             self.state = 93
-            self.args()
+            self.expr()
+            self.state = 98
+            self._errHandler.sync(self)
+            _alt = self._interp.adaptivePredict(self._input,7,self._ctx)
+            while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
+                if _alt==1:
+                    self.state = 94
+                    self.match(switchParser.ARG_DELIM)
+                    self.state = 95
+                    self.expr() 
+                self.state = 100
+                self._errHandler.sync(self)
+                _alt = self._interp.adaptivePredict(self._input,7,self._ctx)
+
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -808,9 +825,9 @@ class switchParser ( Parser ):
         self.enterRule(localctx, 22, self.RULE_comp)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 95
+            self.state = 101
             self.match(switchParser.COMPARISON_OPS)
-            self.state = 96
+            self.state = 102
             self.args()
         except RecognitionException as re:
             localctx.exception = re
@@ -860,20 +877,20 @@ class switchParser ( Parser ):
         self.enterRule(localctx, 24, self.RULE_args)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 98
+            self.state = 104
             self.expr()
-            self.state = 103
+            self.state = 109
             self._errHandler.sync(self)
-            _alt = self._interp.adaptivePredict(self._input,7,self._ctx)
+            _alt = self._interp.adaptivePredict(self._input,8,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
-                    self.state = 99
+                    self.state = 105
                     self.match(switchParser.ARG_DELIM)
-                    self.state = 100
+                    self.state = 106
                     self.expr() 
-                self.state = 105
+                self.state = 111
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,7,self._ctx)
+                _alt = self._interp.adaptivePredict(self._input,8,self._ctx)
 
         except RecognitionException as re:
             localctx.exception = re
@@ -923,7 +940,7 @@ class switchParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 106
+            self.state = 112
             _la = self._input.LA(1)
             if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << switchParser.STRING) | (1 << switchParser.INT) | (1 << switchParser.FLOAT) | (1 << switchParser.NAME))) != 0)):
                 self._errHandler.recoverInline(self)

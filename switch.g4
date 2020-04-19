@@ -20,7 +20,7 @@ call    : 'c' expr ARG_DELIM args 'l' ;
 mult       : MATH_OPS_M args ;
 add_sub_expr : MATH_OPS_A args ;
 assignment   : 'e' (NAME | access) ARG_DELIM expr ;
-access       : 'i' expr ARG_DELIM args ;
+access       : 'i' expr ARG_DELIM expr (ARG_DELIM expr)* ;
 comp         : COMPARISON_OPS args ;
 
 args : expr (ARG_DELIM expr)* ;

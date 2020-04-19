@@ -4,10 +4,21 @@ from antlr4 import *
 from switchLexer import switchLexer
 from switchListener import switchListener
 from switchParser import switchParser
+from antlr4.error.ErrorListener import ErrorListener
 
 import sys
-from pprint import pprint
 
+__all__ = ["comp", "SwitchError"]
+
+class SwitchError(SyntaxError):
+	pass
+
+class MyErrorListener(ErrorListener):
+	def __init__(self):
+		super(MyErrorListener, self).__init__()
+
+	def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+		raise SwitchError("line " + str(line) + ":" + str(column) + " " + msg)
 
 
 class MyWalker(ParseTreeWalker):
@@ -28,6 +39,7 @@ class MyWalker(ParseTreeWalker):
 		map = {
 			switchParser.ArgsContext: listener.nextChildArgs,
 			switchParser.CallContext: listener.nextChildCall,
+			switchParser.AccessContext: listener.nextChildAccess,
 		}
 		ctx = r.getRuleContext()
 		map.get(type(ctx), lambda a, b: None)(ctx, child)
@@ -89,8 +101,8 @@ class switchPrintListener(switchListener):
 			self.st[-1] += bytes(str(num), "utf-8")
 
 		elif ctx.FLOAT() is not None:
-			integer, decimal = ctx.FLOAT().getText().split("d")
-			int_part = int(integer.translate(table), 2)
+			integer, decimal = ctx.FLOAT().getText().translate(table).split("d")
+			int_part = int(integer, 2)
 			
 			dec_part = 0
 			for d in range(len(decimal)):
@@ -192,13 +204,32 @@ class switchPrintListener(switchListener):
 		self.st[-1] += py_assign
 
 	def enterAccess(self, ctx):
-		pass
+		ctx._child_counter = 0
+	
+	def nextChildAccess(self, ctx, child):
+		if (
+			child.getText() != "n" and 
+			1 < ctx._child_counter < len(tuple(ctx.getChildren()))
+		):
+			self.st[-1] += b"]"
+
+		if (
+			child.getText() != "n" and 
+			0 < ctx._child_counter < len(tuple(ctx.getChildren())) - 1
+		):
+			self.st[-1] += b"["
+		
+		ctx._child_counter += 1
+	
+	def exitAccess(self, ctx):
+		del ctx._child_counter
+
 
 def comp(input, file=False):
 	output = bytearray("", "utf-8")
 
 	namespace = {
-		"->": "print",
+		"->": "print_no_nl",
 		":": "SwitchMap",
 		"...": "SwitchList",
 	}
@@ -210,11 +241,18 @@ def comp(input, file=False):
 
 	stream = CommonTokenStream(lexer)
 	parser = switchParser(stream)
+
+	lexer.removeErrorListeners()
+	lexer.addErrorListener(MyErrorListener())
+
+	parser.removeErrorListeners()
+	parser.addErrorListener(MyErrorListener())
+
 	tree = parser.switch_file()
 	printer = switchPrintListener(output, namespace)
 	walker = MyWalker()
 	walker.walk(printer, tree)
-	
+
 	return output
 
 

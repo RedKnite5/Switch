@@ -1,0 +1,285 @@
+
+import sys
+import unittest
+from io import StringIO
+
+from main import comp, SwitchError
+
+
+old_stdout = sys.stdout
+old_stderr = sys.stderr
+
+def run(tester, source_code, output):
+	code = comp(source_code)
+	exec(code)
+	tester.assertEqual(sys.stdout.getvalue(), output)
+	
+	#if sys.stderr.getvalue():
+	#	raise SwitchError(sys.stderr.getvalue())
+
+
+
+class TestPrimitivePrinting(unittest.TestCase):
+	def setUp(self):
+		sys.stdout = StringIO()
+	
+	def tearDown(self):
+		sys.stdout = old_stdout
+	
+	def test_print_one(self):
+		code = comp("c->nOl")
+		exec(code)
+		self.assertEqual(sys.stdout.getvalue(), "1")
+	
+	def test_print_four(self):
+		code = comp("c->nOZZl")
+		exec(code)
+		self.assertEqual(sys.stdout.getvalue(), "4")
+
+	def test_print_thirteen(self):
+		code = comp("c->nOOZOl")
+		exec(code)
+		self.assertEqual(sys.stdout.getvalue(), "13")
+	
+	def test_lowercase_numbers(self):
+		code = comp("c->noozol")
+		exec(code)
+		self.assertEqual(sys.stdout.getvalue(), "13")
+
+	def test_mixedcase_numbers(self):
+		code = comp("c->noOZozl")
+		exec(code)
+		self.assertEqual(sys.stdout.getvalue(), "26")
+
+	def test_numbers_with_spaces(self):
+		code = comp("c->no  OZ \n o	z\tl")
+		exec(code)
+		self.assertEqual(sys.stdout.getvalue(), "26")
+	
+	def test_print_A(self):
+		code = comp("c->nSOZZZZZOl")
+		exec(code)
+		self.assertEqual(sys.stdout.getvalue(), "A")
+
+	def test_print_A_lowercase_numbers(self):
+		code = comp("c->nSozzzzzol")
+		exec(code)
+		self.assertEqual(sys.stdout.getvalue(), "A")
+
+	def test_print_A_mixedcase_numbers(self):
+		code = comp("c->nSoZZzzzOl")
+		exec(code)
+		self.assertEqual(sys.stdout.getvalue(), "A")
+
+	def test_print_A_lowercase_s_fails(self):
+		self.assertRaisesRegex(
+			SwitchError,
+			"line [0-9]+:[0-9]+ token recognition error at: (.*)",
+			comp,
+			"c->nsoZZzzzOl")
+
+	def test_print_Hello(self):
+		code = comp("c->nSOZZOZZZsOOZZOZOsOOZOOZZsOOZOOZZsOOZOOOOl")
+		exec(code)
+		self.assertEqual(sys.stdout.getvalue(), "Hello")
+
+	def test_print_Hello_uppercase_s_fails(self):
+	
+		self.assertRaisesRegex(
+			SwitchError,
+			"line [0-9]+:[0-9]+ no viable alternative at input (.*)",
+			comp,
+			"c->nSOZZOZZZSOOZZOZOSOOZOOZZSOOZOOZZSOOZOOOOl")
+
+	def test_print_Hello_spaces(self):
+		code = comp("c->nSOZZOZZZ sOOZZOZO sOOZOOZZ sOOZOOZZ sOOZOOOOl")
+		exec(code)
+		self.assertEqual(sys.stdout.getvalue(), "Hello")
+	
+	def test_print_float_1d0(self):
+		code = comp("c->nOdZl")
+		exec(code)
+		self.assertEqual(sys.stdout.getvalue(), "1.0")
+
+	def test_print_float_0d25(self):
+		code = comp("c->nZdZOl")
+		exec(code)
+		self.assertEqual(sys.stdout.getvalue(), "0.25")
+
+	def test_print_float_0d75(self):
+		code = comp("c->nZdOOl")
+		exec(code)
+		self.assertEqual(sys.stdout.getvalue(), "0.75")
+
+
+class TestLines(unittest.TestCase):
+	def setUp(self):
+		sys.stdout = StringIO()
+	
+	def tearDown(self):
+		sys.stdout = old_stdout
+	
+	def test_line(self):
+		run(self, "c->nOlLc->nOl", "11")
+
+	def test_line_no_EOF(self):
+		run(self, "c->nOlLc->nOlL", "11")
+
+	def test_line_nl_are_no_substiture(self):
+		self.assertRaisesRegex(
+			SwitchError,
+			"line [0-9]+:[0-9]+ no viable alternative at input (.*)",
+			comp,
+			"c->nOl \n c->nOlL")
+
+	def test_empty_lines(self):
+		run(self, "c->nOl L L c->nOl", "11")
+	
+	def test_empty_file(self):
+		run(self, "", "")
+
+	def test_3_empty_lines(self):
+		run(self, "LLL", "")
+
+	def test_literal_newlines_(self):
+		run(self, """LL
+		L""", "")
+
+
+class TestAssignment(unittest.TestCase):
+	def setUp(self):
+		sys.stdout = StringIO()
+
+	def tearDown(self):
+		sys.stdout = old_stdout
+
+	def test_assignment_star_equals_1(self):
+		run(self, "e*nOLc->n*l", "1")
+
+	def test_assignment_star_equals_A(self):
+		run(self, "e*nSOZZZZZOLc->n*l", "A")
+
+	def test_assignment_star_equals_AB(self):
+		run(self, "e*nSOZZZZZOsOZZZZOZLc->n*l", "AB")
+
+	def test_assignment_star_equals_13(self):
+		run(self, "e*nOOZOLc->n*l", "13")
+
+	def test_assignment_percent_equals_1(self):
+		run(self, "e%nOLc->n%l", "1")
+
+	def test_assignment_backslash_equals_1(self):
+		run(self, "e\\nOLc->n\\l", "1")
+
+	def test_assignment_double_quote_equals_1(self):
+		run(self, "e\"nOLc->n\"l", "1")
+
+	def test_assignment_single_quote_equals_1(self):
+		run(self, "e\'nOLc->n\'l", "1")
+
+	def test_assignment_mess_equals_1(self):
+		run(self, "e{}{{)(&%^&||\\\"\"nOLc->n{}{{)(&%^&||\\\"\"l", "1")
+
+	def test_assignment_star_equals_0d25(self):
+		run(self, "e*nZdZOLc->n*l", "0.25")
+
+	def test_words_dont_work_as_var_names(self):
+		self.assertRaisesRegex(
+			SwitchError,
+			"line [0-9]+:[0-9]+ token recognition error at: (.*)",
+			comp,
+			"exnOLc->nxl")
+
+	def test_numbers_dont_work_as_var_names(self):
+		self.assertRaisesRegex(
+			SwitchError,
+			"line [0-9]+:[0-9]+ token recognition error at: (.*)",
+			comp,
+			"e6nOLc->n6l")
+
+	def test_variables_can_change(self):
+		run(self, "e*nZLc->n*lLe*nOLc->n*l", "01")
+
+	def test_variables_can_change_in_loop(self):
+		run(self, "e?nZL W j?nOZOZ Wb c->n?l L e?np?nO L w", "0123456789")
+
+
+class TestMath(unittest.TestCase):
+	def setUp(self):
+		sys.stdout = StringIO()
+	
+	def tearDown(self):
+		sys.stdout = old_stdout
+
+	def test_print_addition(self):
+		run(self, "c->npOnOZl", "3")
+
+	def test_assign_addition(self):
+		run(self, "e.npOnOZLc->n.l", "3")
+
+	def test_print_addition_of_strings(self):
+		run(self,
+		"c->n p SOZZZZZO n SOZZZZOZl",
+		"AB")
+	
+	def test_chain_addition(self):
+		run(self, "c->n pOn OZZ n O n Zl", "6")
+
+	def test_multiplication(self):
+		run(self, "c->n t OZO n OZl", "10")
+
+	def test_chain_multiplication(self):
+		run(self, "c->n tOn OO n OZZl", "12")
+	
+	def test_subtraction(self):
+		run(self, "c->n m OOO n Ol", "6")
+	
+	def test_subraction_to_negative(self):
+		run(self, "c->n m OZ n OZZl", "-2")
+	
+	def test_chain_subtraction(self):
+		run(self, "c->n m OZOZ n OZ n OZOl", "3")
+	
+	def test_division(self):
+		run(self, "c->n v OZOZ n OZl", "5")
+
+
+class TestAccess(unittest.TestCase):
+	def setUp(self):
+		sys.stdout = StringIO()
+	
+	def tearDown(self):
+		sys.stdout = old_stdout
+	
+	def test_access_list_integers(self):
+		run(self, "e.nc...nZnOnOZlL c->ni.nOZl", "2")
+
+	def test_access_list_strings(self):
+		run(self,
+			"""e.nc...n SOZZZZZO n SOZZZZOZ lL
+			c->ni.nOl""", "B")
+
+	def test_access_map_integer_to_integer(self):
+		run(self, "e.nc:nZnOnOnZlL c->ni.nOl", "0")
+
+	def test_access_map_string_to_integer(self):
+		run(self,
+			"""e.nc:n SOZZZZZO n O n SOZZZZOO n OZZ lL
+			c->ni.nSOZZZZOOl""", "4")
+
+	def test_access_map_integer_to_string(self):
+		run(self,
+			"""e.nc:n OZZZ n SOZZZZOO n OO n SOZZZZOZ lL
+			c->ni.nOZZZl""", "C")
+	
+	def test_chained_access_list_integers(self):
+		run(self,
+			"""e-nc...nOOnOOZlL
+			e.nc...nZnOn-nOZlL
+			c->ni.nOZnOl""", "6")
+
+
+
+if __name__ == "__main__":
+	unittest.main()
+	

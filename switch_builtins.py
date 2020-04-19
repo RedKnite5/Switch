@@ -22,6 +22,8 @@ class SwitchMap(dict):
 			except StopIteration:
 				raise ValueError("Must have an even number of items")
 
+def print_no_nl(*args, **kwargs):
+	print(*args, end="", **kwargs)
 
 def add(*args):
 	return reduce(lambda a, b: a + b, args)
@@ -33,7 +35,10 @@ def mul(*args):
 	return reduce(lambda a, b: a * b, args)
 
 def truediv(*args):
-	return reduce(lambda a, b: a / b, args)
+	r = reduce(lambda a, b: a / b, args)
+	if r.is_integer():
+		return int(r)
+	return r
 
 def mod(*args):
 	return reduce(lambda a, b: a % b, args)
