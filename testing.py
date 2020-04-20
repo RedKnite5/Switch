@@ -207,7 +207,7 @@ class TestAssignment(unittest.TestCase):
 class TestMath(unittest.TestCase):
 	def setUp(self):
 		sys.stdout = StringIO()
-	
+
 	def tearDown(self):
 		sys.stdout = old_stdout
 
@@ -221,36 +221,99 @@ class TestMath(unittest.TestCase):
 		run(self,
 		"c->n p SOZZZZZO n SOZZZZOZl",
 		"AB")
-	
+
 	def test_chain_addition(self):
 		run(self, "c->n pOn OZZ n O n Zl", "6")
+
+	def test_addition_of_floats(self):
+		run(self, "c->n p OdO n ZdZO l", "1.75")
 
 	def test_multiplication(self):
 		run(self, "c->n t OZO n OZl", "10")
 
+	def test_multiplication_of_floats(self):
+		run(self, "c->n t OdO n OZdOl", "3.75")
+
 	def test_chain_multiplication(self):
 		run(self, "c->n tOn OO n OZZl", "12")
-	
+
+	def test_multiplication_between_integer_and_string(self):
+		run(self, "c->n tSOZZZZZO n OOl", "AAA")
+
 	def test_subtraction(self):
 		run(self, "c->n m OOO n Ol", "6")
-	
+
 	def test_subraction_to_negative(self):
 		run(self, "c->n m OZ n OZZl", "-2")
-	
+
+	def test_subtraction_of_floats(self):
+		run(self, "c->n m ZdO n OdZOl", "-0.75")
+
 	def test_chain_subtraction(self):
 		run(self, "c->n m OZOZ n OZ n OZOl", "3")
-	
+
 	def test_division(self):
 		run(self, "c->n v OZOZ n OZl", "5")
+
+	def test_division_to_float(self):
+		run(self, "c->n v OO n OOZl", "0.5")
+
+	def test_division_of_floats(self):
+		run(self, "c->n v OdO n ZdOl", "3")
+
+	def test_mod(self):
+		run(self, "c->n u OZZZ n OOl", "2")
+
+	def test_chain_mod(self):
+		run(self, "c->n u OZZZZZZ n OZOZ n OZl", "0")
+
+	def test_mod_with_floats(self):
+		run(self, "c->n u OdZO n ZdOl", "0.25")
+
+	def test_less_than_true(self):
+		run(self, "c->n j O n OOl", "True")
+
+	def test_less_than_false(self):
+		run(self, "c->n j OZO n OOl", "False")
+
+	def test_less_than_chain_true(self):
+		run(self, "c->n j O n OOO n OZZZl", "True")
+
+	def test_less_than_chain_false(self):
+		run(self, "c->n j OO n OZZO n OZZZl", "False")
+
+	def test_less_than_with_floats(self):
+		run(self, "c->n j OdO n OdOOl", "True")
+
+	def test_greater_than_true(self):
+		run(self, "c->n g OOZ n OZl", "True")
+
+	def test_greater_than_false(self):
+		run(self, "c->n g O n OZZl", "False")
+
+	def test_chain_greater_than_true(self):
+		run(self, "c->n g OOOO n  OZOZ n OOO n Zl", "True")
+
+	def test_chain_greater_than_false(self):
+		run(self, "c->n g OOOZ n OOOO n Ol", "False")
+
+	def test_greater_than_with_floats(self):
+		run(self, "c->n g ZdOOZO n ZdOZOOl", "True")
+
+	def test_equals_true(self):
+		run(self, "c->n q OO n OOl", "True")
+
+	def test_equals_false(self):
+		run(self, "c->n q O n Zl", "False")
 
 
 class TestAccess(unittest.TestCase):
 	def setUp(self):
 		sys.stdout = StringIO()
-	
+
 	def tearDown(self):
 		sys.stdout = old_stdout
-	
+
 	def test_access_list_integers(self):
 		run(self, "e.nc...nZnOnOZlL c->ni.nOZl", "2")
 
@@ -271,7 +334,7 @@ class TestAccess(unittest.TestCase):
 		run(self,
 			"""e.nc:n OZZZ n SOZZZZOO n OO n SOZZZZOZ lL
 			c->ni.nOZZZl""", "C")
-	
+
 	def test_chained_access_list_integers(self):
 		run(self,
 			"""e-nc...nOOnOOZlL
@@ -279,7 +342,30 @@ class TestAccess(unittest.TestCase):
 			c->ni.nOZnOl""", "6")
 
 
+class TestWhileLoop(unittest.TestCase):
+	def setUp(self):
+		sys.stdout = StringIO()
+
+	def tearDown(self):
+		sys.stdout = old_stdout
+
+	def test_while_false_wont_start(self):
+		run(self, "W Z Wb c->nOlL w", "")
+
+
+class TestListAndMap(unittest.TestCase):
+	def setUp(self):
+		sys.stdout = StringIO()
+
+	def tearDown(self):
+		sys.stdout = old_stdout
+
+	def test_list(self):
+		run(self, "c->n c...n O n OZ n OO n OZZl l", "[1,2,3,4]")
+
+	def test_map(self):
+		run(self, "c->n c:n OnO n OZnOOl l", "{1:1,2:3}")
+
 
 if __name__ == "__main__":
 	unittest.main()
-	

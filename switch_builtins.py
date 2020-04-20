@@ -9,7 +9,23 @@ class Namespace(dict):
 class SwitchList(dict):
 	def __init__(self, *args):
 		super().__init__()
+		self.length = len(args)
+		self.update({
+			"append": lambda a: self.append(a),
+			"pop": lambda: self.pop(self.length - 1),
+			"length": self.length,
+		})
 		self.update(dict(enumerate(args)))
+
+	def append(self, val):
+		self.update({self.length: val})
+		self.length += 1
+
+	def __str__(self):
+		s = "["
+		for i in range(self.length):
+			s += str(self[i]) + ","
+		return s[:-1] + "]"
 
 class SwitchMap(dict):
 	def __init__(self, *args):
@@ -21,6 +37,16 @@ class SwitchMap(dict):
 				self.update({x: next(it)})
 			except StopIteration:
 				raise ValueError("Must have an even number of items")
+
+	def __str__(self):
+		s = "{"
+		for key, val in self.items():
+			s += f"{key}:{val},"
+		return s[:-1] + "}"
+
+
+class Number(int, float):
+	pass
 
 def print_no_nl(*args, **kwargs):
 	print(*args, end="", **kwargs)
@@ -62,5 +88,5 @@ def equal(*args):
 	for i in range(len(args)):
 		if i == len(args) - 1:
 			return all(total)
-		total.append(args[i] > args[i + 1])
+		total.append(args[i] == args[i + 1])
 
