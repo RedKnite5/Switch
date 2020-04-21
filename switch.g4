@@ -16,7 +16,7 @@ expr  : ( prim_expr
 		| access 
 		| comp )       ;
 
-call         : CALL_OP expr ARG_DELIM args END_CALL ;
+call         : CALL_OP expr (ARG_DELIM args)? END_CALL ;
 mult         : MATH_OPS_M args END_CALL ;
 add_sub_expr : MATH_OPS_A args END_CALL ;
 assignment   : ASSIGNMENT_OP (NAME | access) ARG_DELIM expr END_CALL ;

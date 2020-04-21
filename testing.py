@@ -107,6 +107,9 @@ class TestPrimitivePrinting(unittest.TestCase):
 		exec(code)
 		self.assertEqual(sys.stdout.getvalue(), "0.75")
 
+	def test_print_nothing(self):
+		run(self, "c->l", "")
+
 
 class TestLines(unittest.TestCase):
 	def setUp(self):
