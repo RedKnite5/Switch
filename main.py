@@ -20,6 +20,14 @@ class MyErrorListener(ErrorListener):
 	def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
 		raise SwitchError("line " + str(line) + ":" + str(column) + " " + msg)
 
+	def reportAmbiguity(self, recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs):
+		raise SwitchError("Ambiguity")
+
+	def reportAttemptingFullContext(self, recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs):
+		raise SwitchError("AttemptingFullContext")
+
+	def reportContextSensitivity(self, recognizer, dfa, startIndex, stopIndex, prediction, configs):
+		raise SwitchError("ContextSensitivity")
 
 class MyWalker(ParseTreeWalker):
 	def walk(self, listener, t):
