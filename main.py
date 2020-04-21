@@ -209,13 +209,13 @@ class switchPrintListener(switchListener):
 	def nextChildAccess(self, ctx, child):
 		if (
 			child.getText() != "n" and 
-			1 < ctx._child_counter < len(tuple(ctx.getChildren()))
+			1 < ctx._child_counter < len(tuple(ctx.getChildren())) - 1
 		):
 			self.st[-1] += b"]"
 
 		if (
 			child.getText() != "n" and 
-			0 < ctx._child_counter < len(tuple(ctx.getChildren())) - 1
+			0 < ctx._child_counter < len(tuple(ctx.getChildren())) - 2
 		):
 			self.st[-1] += b"["
 		

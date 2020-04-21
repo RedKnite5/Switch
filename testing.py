@@ -69,9 +69,8 @@ class TestPrimitivePrinting(unittest.TestCase):
 		self.assertEqual(sys.stdout.getvalue(), "A")
 
 	def test_print_A_lowercase_s_fails(self):
-		self.assertRaisesRegex(
+		self.assertRaises(
 			SwitchError,
-			"line [0-9]+:[0-9]+ token recognition error at: (.*)",
 			comp,
 			"c->nsoZZzzzOl")
 
@@ -151,54 +150,54 @@ class TestAssignment(unittest.TestCase):
 		sys.stdout = old_stdout
 
 	def test_assignment_star_equals_1(self):
-		run(self, "e*nOLc->n*l", "1")
+		run(self, "e*nOlLc->n*l", "1")
 
 	def test_assignment_star_equals_A(self):
-		run(self, "e*nSOZZZZZOLc->n*l", "A")
+		run(self, "e*nSOZZZZZOlLc->n*l", "A")
 
 	def test_assignment_star_equals_AB(self):
-		run(self, "e*nSOZZZZZOsOZZZZOZLc->n*l", "AB")
+		run(self, "e*nSOZZZZZOsOZZZZOZlLc->n*l", "AB")
 
 	def test_assignment_star_equals_13(self):
-		run(self, "e*nOOZOLc->n*l", "13")
+		run(self, "e*nOOZOlLc->n*l", "13")
 
 	def test_assignment_percent_equals_1(self):
-		run(self, "e%nOLc->n%l", "1")
+		run(self, "e%nOlLc->n%l", "1")
 
 	def test_assignment_backslash_equals_1(self):
-		run(self, "e\\nOLc->n\\l", "1")
+		run(self, "e\\nOlLc->n\\l", "1")
 
 	def test_assignment_double_quote_equals_1(self):
-		run(self, "e\"nOLc->n\"l", "1")
+		run(self, "e\"nOlLc->n\"l", "1")
 
 	def test_assignment_single_quote_equals_1(self):
-		run(self, "e\'nOLc->n\'l", "1")
+		run(self, "e\'nOlLc->n\'l", "1")
 
 	def test_assignment_mess_equals_1(self):
-		run(self, "e{}{{)(&%^&||\\\"\"nOLc->n{}{{)(&%^&||\\\"\"l", "1")
+		run(self, "e{}{{)(&%^&||\\\"\"nOlLc->n{}{{)(&%^&||\\\"\"l", "1")
 
 	def test_assignment_star_equals_0d25(self):
-		run(self, "e*nZdZOLc->n*l", "0.25")
+		run(self, "e*nZdZOlLc->n*l", "0.25")
 
 	def test_words_dont_work_as_var_names(self):
 		self.assertRaisesRegex(
 			SwitchError,
 			"line [0-9]+:[0-9]+ token recognition error at: (.*)",
 			comp,
-			"exnOLc->nxl")
+			"exnOlLc->nxl")
 
 	def test_numbers_dont_work_as_var_names(self):
 		self.assertRaisesRegex(
 			SwitchError,
 			"line [0-9]+:[0-9]+ token recognition error at: (.*)",
 			comp,
-			"e6nOLc->n6l")
+			"e6nOlLc->n6l")
 
 	def test_variables_can_change(self):
-		run(self, "e*nZLc->n*lLe*nOLc->n*l", "01")
+		run(self, "e*nZlLc->n*lLe*nOlLc->n*l", "01")
 
 	def test_variables_can_change_in_loop(self):
-		run(self, "e?nZL W j?nOZOZ Wb c->n?l L e?np?nO L w", "0123456789")
+		run(self, "e?nZlL W j?nOZOZl Wb c->n?l L e?np?nOll L w", "0123456789")
 
 
 class TestMath(unittest.TestCase):
@@ -209,99 +208,99 @@ class TestMath(unittest.TestCase):
 		sys.stdout = old_stdout
 
 	def test_print_addition(self):
-		run(self, "c->npOnOZl", "3")
+		run(self, "c->npOnOZll", "3")
 
 	def test_assign_addition(self):
-		run(self, "e.npOnOZLc->n.l", "3")
+		run(self, "e.npOnOZllLc->n.l", "3")
 
 	def test_print_addition_of_strings(self):
 		run(self,
-		"c->n p SOZZZZZO n SOZZZZOZl",
+		"c->n p SOZZZZZO n SOZZZZOZl l",
 		"AB")
 
 	def test_chain_addition(self):
-		run(self, "c->n pOn OZZ n O n Zl", "6")
+		run(self, "c->n pOn OZZ n O n Zl l", "6")
 
 	def test_addition_of_floats(self):
-		run(self, "c->n p OdO n ZdZO l", "1.75")
+		run(self, "c->n p OdO n ZdZOl l", "1.75")
 
 	def test_multiplication(self):
-		run(self, "c->n t OZO n OZl", "10")
+		run(self, "c->n t OZO n OZl l", "10")
 
 	def test_multiplication_of_floats(self):
-		run(self, "c->n t OdO n OZdOl", "3.75")
+		run(self, "c->n t OdO n OZdOl l", "3.75")
 
 	def test_chain_multiplication(self):
-		run(self, "c->n tOn OO n OZZl", "12")
+		run(self, "c->n tOn OO n OZZl l", "12")
 
 	def test_multiplication_between_integer_and_string(self):
-		run(self, "c->n tSOZZZZZO n OOl", "AAA")
+		run(self, "c->n tSOZZZZZO n OOl l", "AAA")
 
 	def test_subtraction(self):
-		run(self, "c->n m OOO n Ol", "6")
+		run(self, "c->n m OOO n Ol l", "6")
 
 	def test_subraction_to_negative(self):
-		run(self, "c->n m OZ n OZZl", "-2")
+		run(self, "c->n m OZ n OZZl l", "-2")
 
 	def test_subtraction_of_floats(self):
-		run(self, "c->n m ZdO n OdZOl", "-0.75")
+		run(self, "c->n m ZdO n OdZOl l", "-0.75")
 
 	def test_chain_subtraction(self):
-		run(self, "c->n m OZOZ n OZ n OZOl", "3")
+		run(self, "c->n m OZOZ n OZ n OZOl l", "3")
 
 	def test_division(self):
-		run(self, "c->n v OZOZ n OZl", "5")
+		run(self, "c->n v OZOZ n OZl l", "5")
 
 	def test_division_to_float(self):
-		run(self, "c->n v OO n OOZl", "0.5")
+		run(self, "c->n v OO n OOZl l", "0.5")
 
 	def test_division_of_floats(self):
-		run(self, "c->n v OdO n ZdOl", "3")
+		run(self, "c->n v OdO n ZdOl l", "3")
 
 	def test_mod(self):
-		run(self, "c->n u OZZZ n OOl", "2")
+		run(self, "c->n u OZZZ n OOl l", "2")
 
 	def test_chain_mod(self):
-		run(self, "c->n u OZZZZZZ n OZOZ n OZl", "0")
+		run(self, "c->n u OZZZZZZ n OZOZ n OZl l", "0")
 
 	def test_mod_with_floats(self):
-		run(self, "c->n u OdZO n ZdOl", "0.25")
+		run(self, "c->n u OdZO n ZdOl l", "0.25")
 
 	def test_less_than_true(self):
-		run(self, "c->n j O n OOl", "True")
+		run(self, "c->n j O n OOl l", "True")
 
 	def test_less_than_false(self):
-		run(self, "c->n j OZO n OOl", "False")
+		run(self, "c->n j OZO n OOl l", "False")
 
 	def test_less_than_chain_true(self):
-		run(self, "c->n j O n OOO n OZZZl", "True")
+		run(self, "c->n j O n OOO n OZZZl l", "True")
 
 	def test_less_than_chain_false(self):
-		run(self, "c->n j OO n OZZO n OZZZl", "False")
+		run(self, "c->n j OO n OZZO n OZZZl l", "False")
 
 	def test_less_than_with_floats(self):
-		run(self, "c->n j OdO n OdOOl", "True")
+		run(self, "c->n j OdO n OdOOl l", "True")
 
 	def test_greater_than_true(self):
-		run(self, "c->n g OOZ n OZl", "True")
+		run(self, "c->n g OOZ n OZl l", "True")
 
 	def test_greater_than_false(self):
-		run(self, "c->n g O n OZZl", "False")
+		run(self, "c->n g O n OZZl l", "False")
 
 	def test_chain_greater_than_true(self):
-		run(self, "c->n g OOOO n  OZOZ n OOO n Zl", "True")
+		run(self, "c->n g OOOO n  OZOZ n OOO n Zl l", "True")
 
 	def test_chain_greater_than_false(self):
-		run(self, "c->n g OOOZ n OOOO n Ol", "False")
+		run(self, "c->n g OOOZ n OOOO n Ol l", "False")
 
 	def test_greater_than_with_floats(self):
-		run(self, "c->n g ZdOOZO n ZdOZOOl", "True")
+		run(self, "c->n g ZdOOZO n ZdOZOOl l", "True")
 
 	def test_equals_true(self):
-		run(self, "c->n q OO n OOl", "True")
+		run(self, "c->n q OO n OOl l", "True")
 
 	def test_equals_false(self):
-		run(self, "c->n q O n Zl", "False")
+		run(self, "c->n q O n Zl l", "False")
 
 
 class TestAccess(unittest.TestCase):
@@ -312,31 +311,31 @@ class TestAccess(unittest.TestCase):
 		sys.stdout = old_stdout
 
 	def test_access_list_integers(self):
-		run(self, "e.nc...nZnOnOZlL c->ni.nOZl", "2")
+		run(self, "e.nc...nZnOnOZllL c->ni.nOZll", "2")
 
 	def test_access_list_strings(self):
 		run(self,
-			"""e.nc...n SOZZZZZO n SOZZZZOZ lL
-			c->ni.nOl""", "B")
+			"""e.nc...n SOZZZZZO n SOZZZZOZ llL
+			c->ni.nOll""", "B")
 
 	def test_access_map_integer_to_integer(self):
-		run(self, "e.nc:nZnOnOnZlL c->ni.nOl", "0")
+		run(self, "e.nc:nZnOnOnZllL c->ni.nOll", "0")
 
 	def test_access_map_string_to_integer(self):
 		run(self,
-			"""e.nc:n SOZZZZZO n O n SOZZZZOO n OZZ lL
-			c->ni.nSOZZZZOOl""", "4")
+			"""e.nc:n SOZZZZZO n O n SOZZZZOO n OZZ llL
+			c->ni.nSOZZZZOOl l""", "4")
 
 	def test_access_map_integer_to_string(self):
 		run(self,
-			"""e.nc:n OZZZ n SOZZZZOO n OO n SOZZZZOZ lL
-			c->ni.nOZZZl""", "C")
+			"""e.nc:n OZZZ n SOZZZZOO n OO n SOZZZZOZ llL
+			c->ni.nOZZZl l""", "C")
 
 	def test_chained_access_list_integers(self):
 		run(self,
-			"""e-nc...nOOnOOZlL
-			e.nc...nZnOn-nOZlL
-			c->ni.nOZnOl""", "6")
+			"""e-nc...nOOnOOZl lL
+			e.nc...nZnOn-nOZl lL
+			c->ni.nOZnOl l""", "6")
 
 
 class TestWhileLoop(unittest.TestCase):
@@ -366,7 +365,7 @@ class TestListAndMap(unittest.TestCase):
 	def test_list_strings(self):
 		run(self,
 			"""
-			e*n c...n SOZZZZZO sOZZZZOZ n SOZZZZOOl L
+			e*n c...n SOZZZZZO sOZZZZOZ n SOZZZZOOl l L
 			c->n * l
 			""",
 			"[AB,C]")
@@ -375,7 +374,7 @@ class TestListAndMap(unittest.TestCase):
 	def test_map_strings(self):
 		run(self,
 			"""
-			e*n c:n SOZZZZZO sOZZZZOZnSOZZZZOO l L
+			e*n c:n SOZZZZZO sOZZZZOZnSOZZZZOO l l L
 			c->n * l
 			""",
 			"{AB:C}")
@@ -383,8 +382,8 @@ class TestListAndMap(unittest.TestCase):
 	def test_list_append(self):
 		run(self,
 			"""
-			e*n c...n OO n OZ l L
-			ci*n SOOZZZZO sOOZZOZZ sOOZZOZZ n Z l L
+			e*n c...n OO n OZ l l L
+			ci*n SOOZZZZO sOOZZOZZ sOOZZOZZl n Z l L
 			c->n * l
 			""",
 			"[3,2,0]")
