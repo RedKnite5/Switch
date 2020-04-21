@@ -140,7 +140,9 @@ class SwitchMap(dict):
 
 
 def print_no_nl(*args, **kwargs):
-	print(*args, end="", **kwargs)
+	kw = {"end": ""}
+	kw.update(kwargs)
+	print(*args, **kw)
 
 def add(*args):
 	return reduce(lambda a, b: a + b, args)
@@ -152,32 +154,26 @@ def mul(*args):
 	return reduce(lambda a, b: a * b, args)
 
 def truediv(*args):
-	r = reduce(lambda a, b: a / b, args)
-	if r.is_integer():
-		return int(r)
-	return r
+	return reduce(lambda a, b: a / b, args)
 
 def mod(*args):
 	return reduce(lambda a, b: a % b, args)
 
 def less_than(*args):
 	total = []
-	for i in range(len(args)):
-		if i == len(args) - 1:
-			return all(total)
+	for i in range(len(args) - 1):
 		total.append(args[i] < args[i + 1])
+	return all(total)
 
 def greater_than(*args):
 	total = []
-	for i in range(len(args)):
-		if i == len(args) - 1:
-			return all(total)
+	for i in range(len(args) - 1):
 		total.append(args[i] > args[i + 1])
+	return all(total)
 
 def equal(*args):
 	total = []
-	for i in range(len(args)):
-		if i == len(args) - 1:
-			return all(total)
+	for i in range(len(args) - 1):
 		total.append(args[i] == args[i + 1])
+	return all(total)
 
