@@ -13,24 +13,21 @@ def run(tester, source_code, output):
 	code = comp(source_code)
 	exec(code)
 	tester.assertEqual(sys.stdout.getvalue(), output)
-	
-	#if sys.stderr.getvalue():
-	#	raise SwitchError(sys.stderr.getvalue())
 
 
 
 class TestPrimitivePrinting(unittest.TestCase):
 	def setUp(self):
 		sys.stdout = StringIO()
-	
+
 	def tearDown(self):
 		sys.stdout = old_stdout
-	
+
 	def test_print_one(self):
 		code = comp("c->nOl")
 		exec(code)
 		self.assertEqual(sys.stdout.getvalue(), "1")
-	
+
 	def test_print_four(self):
 		code = comp("c->nOZZl")
 		exec(code)
@@ -40,7 +37,7 @@ class TestPrimitivePrinting(unittest.TestCase):
 		code = comp("c->nOOZOl")
 		exec(code)
 		self.assertEqual(sys.stdout.getvalue(), "13")
-	
+
 	def test_lowercase_numbers(self):
 		code = comp("c->noozol")
 		exec(code)
@@ -55,7 +52,7 @@ class TestPrimitivePrinting(unittest.TestCase):
 		code = comp("c->no  OZ \n o	z\tl")
 		exec(code)
 		self.assertEqual(sys.stdout.getvalue(), "26")
-	
+
 	def test_print_A(self):
 		code = comp("c->nSOZZZZZOl")
 		exec(code)
@@ -84,7 +81,7 @@ class TestPrimitivePrinting(unittest.TestCase):
 		self.assertEqual(sys.stdout.getvalue(), "Hello")
 
 	def test_print_Hello_uppercase_s_fails(self):
-	
+
 		self.assertRaisesRegex(
 			SwitchError,
 			"line [0-9]+:[0-9]+ no viable alternative at input (.*)",
@@ -95,11 +92,11 @@ class TestPrimitivePrinting(unittest.TestCase):
 		code = comp("c->nSOZZOZZZ sOOZZOZO sOOZOOZZ sOOZOOZZ sOOZOOOOl")
 		exec(code)
 		self.assertEqual(sys.stdout.getvalue(), "Hello")
-	
+
 	def test_print_float_1d0(self):
 		code = comp("c->nOdZl")
 		exec(code)
-		self.assertEqual(sys.stdout.getvalue(), "1.0")
+		self.assertEqual(sys.stdout.getvalue(), "1")
 
 	def test_print_float_0d25(self):
 		code = comp("c->nZdZOl")
@@ -115,10 +112,10 @@ class TestPrimitivePrinting(unittest.TestCase):
 class TestLines(unittest.TestCase):
 	def setUp(self):
 		sys.stdout = StringIO()
-	
+
 	def tearDown(self):
 		sys.stdout = old_stdout
-	
+
 	def test_line(self):
 		run(self, "c->nOlLc->nOl", "11")
 
@@ -134,7 +131,7 @@ class TestLines(unittest.TestCase):
 
 	def test_empty_lines(self):
 		run(self, "c->nOl L L c->nOl", "11")
-	
+
 	def test_empty_file(self):
 		run(self, "", "")
 
@@ -365,6 +362,32 @@ class TestListAndMap(unittest.TestCase):
 
 	def test_map(self):
 		run(self, "c->n c:n OnO n OZnOOl l", "{1:1,2:3}")
+
+	def test_list_strings(self):
+		run(self,
+			"""
+			e*n c...n SOZZZZZO sOZZZZOZ n SOZZZZOOl L
+			c->n * l
+			""",
+			"[AB,C]")
+		# Lack of quotes around strings may or may not be a problem
+
+	def test_map_strings(self):
+		run(self,
+			"""
+			e*n c:n SOZZZZZO sOZZZZOZnSOZZZZOO l L
+			c->n * l
+			""",
+			"{AB:C}")
+
+	def test_list_append(self):
+		run(self,
+			"""
+			e*n c...n OO n OZ l L
+			ci*n SOOZZZZO sOOZZOZZ sOOZZOZZ n Z l L
+			c->n * l
+			""",
+			"[3,2,0]")
 
 
 if __name__ == "__main__":

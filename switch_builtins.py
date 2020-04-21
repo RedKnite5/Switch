@@ -1,5 +1,99 @@
 
 from functools import reduce
+from fractions import Fraction
+
+__all__ = [
+	"SwitchFrac",
+	"Namespace",
+	"SwitchList",
+	"SwitchMap",
+	"print_no_nl",
+	"add",
+	"sub",
+	"mul",
+	"truediv",
+	"mod",
+	"less_than",
+	"greater_than",
+	"equal",
+]
+
+
+def return_same_class(cls):
+	def wrap(func):
+		return lambda self, *args, **kwargs: self.__class__(func(self, *args, **kwargs))
+
+	methods = (
+		"__add__", "__radd__",
+		"__sub__", "__rsub__",
+		"__mul__", "__rmul__",
+		"__truediv__", "__rtruediv__",
+		"__mod__", "__rmod__",
+		"limit_denominator"
+	)
+
+	for method in methods:
+		wrapped = wrap(getattr(cls, method))
+		setattr(cls, method, wrapped)
+
+	return cls
+
+def limit_float_denominators(method):
+	def func(self, other):
+		if isinstance(other, float):
+			return getattr(self, method)(self.__class__(other).limit_denominator())
+
+		return getattr(super(SwitchFracBase, self), method)(other)
+	return func
+
+def overload_math_dunder_methods(func):
+	def decorator(cls):
+		methods = (
+			"__add__", "__radd__",
+			"__sub__", "__rsub__",
+			"__mul__", "__rmul__",
+			"__truediv__", "__rtruediv__",
+			"__mod__", "__rmod__"
+		)
+
+		for method in methods:
+			f = func(method)
+			setattr(cls, method, f)
+
+		return cls
+	return decorator
+
+@return_same_class
+@overload_math_dunder_methods(limit_float_denominators)
+class SwitchFracBase(Fraction):
+	def __str__(self):
+		if self.denominator == 1:
+			return str(self.numerator)
+		else:
+			return str(self.numerator / self.denominator)
+
+	def is_integer(self):
+		return self.denominator == 1
+
+
+class SwitchFrac(SwitchFracBase):
+	def __mul__(self, other):
+		try:
+			return super().__mul__(other)
+		except TypeError:
+			if self.denominator == 1:
+				return self.numerator * other
+			else:
+				raise
+
+	def __rmul__(self, other):
+		try:
+			return super().__rmul__(other)
+		except TypeError:
+			if self.denominator == 1:
+				return other * self.numerator
+			else:
+				raise
 
 class Namespace(dict):
 	def walrus(self, key, value):
@@ -11,9 +105,9 @@ class SwitchList(dict):
 		super().__init__()
 		self.length = len(args)
 		self.update({
-			"append": lambda a: self.append(a),
+			"add": lambda a: self.append(a),
 			"pop": lambda: self.pop(self.length - 1),
-			"length": self.length,
+			"len": self.length,
 		})
 		self.update(dict(enumerate(args)))
 
@@ -44,9 +138,6 @@ class SwitchMap(dict):
 			s += f"{key}:{val},"
 		return s[:-1] + "}"
 
-
-class Number(int, float):
-	pass
 
 def print_no_nl(*args, **kwargs):
 	print(*args, end="", **kwargs)

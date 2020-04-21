@@ -95,21 +95,21 @@ class switchPrintListener(switchListener):
 		table[ord("\t")] = None
 		table[ord("\n")] = None
 		table[ord("\r")] = None
-		
+
 		if ctx.INT() is not None:
 			num = int(ctx.INT().getText().translate(table), 2)
-			self.st[-1] += bytes(str(num), "utf-8")
+			self.st[-1] += bytes(f"SwitchFrac({num})", "utf-8")
 
 		elif ctx.FLOAT() is not None:
 			integer, decimal = ctx.FLOAT().getText().translate(table).split("d")
 			int_part = int(integer, 2)
-			
+
 			dec_part = 0
 			for d in range(len(decimal)):
-				dec_part += float(decimal[d]) / 2**(d + 1)
-			
-			self.st[-1] += bytes(str(int_part + dec_part), "utf-8")
-			
+				dec_part += float(decimal[d]) / 2 ** (d + 1)
+
+			self.st[-1] += bytes(f"SwitchFrac({int_part + dec_part})", "utf-8")
+
 		elif ctx.NAME() is not None:
 			try:
 				self.st[-1] += bytes(self.ns[ctx.getText()], "utf-8")
