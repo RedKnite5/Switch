@@ -72,6 +72,12 @@ class SwitchFracBase(Fraction):
 		else:
 			return str(self.numerator / self.denominator)
 
+	def __repr__(self):
+		if self.denominator == 1:
+			return str(self.numerator)
+		else:
+			return str(self.numerator / self.denominator)
+
 	def is_integer(self):
 		return self.denominator == 1
 
@@ -118,7 +124,7 @@ class SwitchList(dict):
 	def __str__(self):
 		s = "["
 		for i in range(self.length):
-			s += str(self[i]) + ","
+			s += repr(self[i]) + ","
 		return s[:-1] + "]"
 
 class SwitchMap(dict):
@@ -135,7 +141,7 @@ class SwitchMap(dict):
 	def __str__(self):
 		s = "{"
 		for key, val in self.items():
-			s += f"{key}:{val},"
+			s += f"{repr(key)}:{repr(val)},"
 		return s[:-1] + "}"
 
 

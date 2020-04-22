@@ -351,6 +351,18 @@ class TestWhileLoop(unittest.TestCase):
 	def test_while_false_wont_start(self):
 		run(self, "W Z Wb c->nOlL w", "")
 
+	def test_normal_while_loop(self):
+		run(self, "e!n OOO lL W g!nZl Wb c->n e!n m!nOl ll L w", "6543210")
+
+	def test_nested_while_loop(self):
+		run(self,
+			"""e!n OO l L
+			W!Wb
+			e*n OZZ l L
+			W*Wb c->n p*n!l lL  e*n m*nOl lL w
+			e!n m!nOl lL w
+			""",
+			"765465435432")
 
 class TestListAndMap(unittest.TestCase):
 	def setUp(self):
@@ -371,8 +383,16 @@ class TestListAndMap(unittest.TestCase):
 			e*n c...n SOZZZZZO sOZZZZOZ n SOZZZZOOl l L
 			c->n * l
 			""",
-			"[AB,C]")
-		# Lack of quotes around strings may or may not be a problem
+			# Lack of quotes around strings may or may not be a problem
+			"['AB','C']")
+
+	def test_list_string_num(self):
+		run(self,
+			"""
+			e*n c...n SOOZZOZ sOOZZZZ n SOOZOZZl l L
+			c->n * l L
+			""",
+			"['20','4']")
 
 	def test_map_strings(self):
 		run(self,
@@ -380,7 +400,7 @@ class TestListAndMap(unittest.TestCase):
 			e*n c:n SOZZZZZO sOZZZZOZnSOZZZZOO l l L
 			c->n * l
 			""",
-			"{AB:C}")
+			"{'AB':'C'}")
 
 	def test_list_append(self):
 		run(self,
@@ -390,6 +410,18 @@ class TestListAndMap(unittest.TestCase):
 			c->n * l
 			""",
 			"[3,2,0]")
+
+class TestFile(unittest.TestCase):
+	def setUp(self):
+		sys.stdout = StringIO()
+
+	def tearDown(self):
+		sys.stdout = old_stdout
+
+	def test_test_sw_file(self):
+		code = comp("test.sw", file=True)
+		exec(code)
+		self.assertEqual(sys.stdout.getvalue(), "{1:3}0123456789 20")
 
 
 if __name__ == "__main__":

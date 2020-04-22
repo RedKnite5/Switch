@@ -21,10 +21,12 @@ class MyErrorListener(ErrorListener):
 		raise SwitchError("line " + str(line) + ":" + str(column) + " " + msg)
 
 	def reportAmbiguity(self, recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs):
-		raise SwitchError("Ambiguity")
+		#raise SwitchError("Ambiguity")
+		pass
 
 	def reportAttemptingFullContext(self, recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs):
-		raise SwitchError("AttemptingFullContext")
+		#raise SwitchError("AttemptingFullContext")
+		pass
 
 	def reportContextSensitivity(self, recognizer, dfa, startIndex, stopIndex, prediction, configs):
 		raise SwitchError("ContextSensitivity")
@@ -68,7 +70,7 @@ class switchPrintListener(switchListener):
 		)
 
 	def enterWhile_loop(self, ctx):
-		self.st[-1] += b"while "
+		self.st[-1] += b" " * self.indent + b"while "
 	
 	def enterWhile_test(self, ctx):
 		self.st.append(bytearray(b""))
@@ -84,15 +86,20 @@ class switchPrintListener(switchListener):
 	def exitWhile_block(self, ctx):
 		self.indent -= 1
 
+		self.st[-1] += b"\n"
+
 	def enterLine(self, ctx):
 		children = ctx.getChildren()
 		for child in children:
-			if isinstance(child, switchParser.ExprContext):
+			if isinstance(
+				child,
+				(switchParser.ExprContext, switchParser.While_loopContext)
+			):
 				self.st[-1] += b" " * self.indent
 
 	def exitLine(self, ctx):
 		self.st[-1] += b"\n"
-		
+
 	def enterExpr(self, ctx):
 		#print("Text: ", ctx.getText())
 		pass
