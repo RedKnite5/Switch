@@ -35,6 +35,8 @@ class MyErrorListener(ErrorListener):
 		raise SwitchError("ContextSensitivity")
 
 class MyWalker(ParseTreeWalker):
+	"""Support the nextChildf unction"""
+
 	def walk(self, listener, t):
 		if isinstance(t, ErrorNode):
 			listener.visitErrorNode(t)
@@ -49,6 +51,12 @@ class MyWalker(ParseTreeWalker):
 		self.exitRule(listener, t)
 
 	def nextChildRule(self, listener, r, child):
+		"""A function that gets called whenever one of the listed classes
+		moves to the next child while walking"""
+
+		# The classes that will call the nextChild function
+		# nextChild must be implemented for all these classes or
+		# AttributeError will occur
 		map = {
 			switchParser.ArgsContext: listener.nextChildArgs,
 			switchParser.CallContext: listener.nextChildCall,
@@ -67,47 +75,63 @@ class switchPrintListener(switchListener):
 		self.indent = 0
 
 	def enterSwitch_file(self, ctx):
+		"""Add initial setup commands for the Switch language"""
+
 		self.st[-1] += (
 			b"from switch_builtins import *\n"
 			b"namespace = Namespace()\n"
 		)
 
 	def enterWhile_loop(self, ctx):
+		"""Indent while loops if they are inside other blocks"""
+
 		self.st[-1] += b" " * self.indent + b"while "
 
 	def enterWhile_test(self, ctx):
+		"""While loop tests must be handled seperatly from other statments
+		because they go between the while keyword and the colon"""
+
 		self.st.append(bytearray(b""))
 
 	def exitWhile_test(self, ctx):
+		"""Add the contents of the while test, followed by a colon and a
+		newline"""
+
 		val = self.st.pop()
 		self.st[-1] += val
 		self.st[-1] += b":\n"
 
 	def enterWhile_block(self, ctx):
+		"""Increase the indentation"""
+
 		self.indent += 1
 
 	def exitWhile_block(self, ctx):
+		"""Decrease the indentaion"""
+
 		self.indent -= 1
 
 		self.st[-1] += b"\n"
 
 	def enterLine(self, ctx):
-		children = ctx.getChildren()
-		for child in children:
-			if isinstance(
-				child,
-				(switchParser.ExprContext, switchParser.While_loopContext)
-			):
-				self.st[-1] += b" " * self.indent
+		"""Indent normal lines as well as while loops"""
+
+		#children = ctx.getChildren()
+		#for child in children:
+		#	if isinstance(
+		#		child,
+		#		(switchParser.ExprContext, switchParser.While_loopContext)
+		#	):
+		self.st[-1] += b" " * self.indent
 
 	def exitLine(self, ctx):
+		"""Put newline after each line"""
+
 		self.st[-1] += b"\n"
 
-	def enterExpr(self, ctx):
-		#print("Text: ", ctx.getText())
-		pass
-
 	def enterPrim_expr(self, ctx):
+		"""Evaluate INTEGERs, FLOATs, STRINGs, and NAMEs"""
+
 		table = str.maketrans("zZoO", "0011")
 		table[ord(" ")] = None
 		table[ord("\t")] = None
@@ -145,37 +169,49 @@ class switchPrintListener(switchListener):
 			self.st[-1] += bytes(f"'{''.join(chars)}'", "utf-8")
 
 	def enterCall(self, ctx):
+		"""Start keeping track of how many children have passed"""
+
 		self.call_start = 0
 
 	def nextChildCall(self, ctx, child):
+		"""Add an open paren only if this is the second child"""
+
 		if self.call_start == 1:
 			self.st[-1] += b"("
 		self.call_start += 1
 
 	def exitCall(self, ctx):
+		"""Add a close paren to function call"""
+
 		self.st[-1] += b")"
 
 	def enterMult(self, ctx):
+		"""Add the function that corosponds the the correct operator"""
+
 		ops = {
 			"t": "mul",
 			"v": "truediv",
 			"u": "mod"
 		}
-	
+
 		self.st[-1] += bytes(
 			ops[ctx.children[0].getText()],
 			"utf-8"
 		) + b"("
 
 	def exitMult(self, ctx):
+		"""Close the function call"""
+
 		self.st[-1] += b")"
 
 	def enterAdd_sub_expr(self, ctx):
+		"""Add the function that corosponds the correct operator"""
+
 		ops = {
 			"p": "add",
 			"m": "sub"
 		}
-	
+
 		self.st[-1] += bytes(
 			ops[ctx.children[0].getText()],
 			"utf-8"
@@ -190,7 +226,7 @@ class switchPrintListener(switchListener):
 			"g": "greater_than",
 			"q": "equal"
 		}
-	
+
 		self.st[-1] += bytes(
 			ops[ctx.children[0].getText()],
 			"utf-8"
@@ -200,17 +236,27 @@ class switchPrintListener(switchListener):
 		self.st[-1] += b")"
 
 	def nextChildArgs(self, ctx, child):
+		"""Add commas where appropriate"""
+
 		if (
+			# if this is not the last child
 			tuple(ctx.getChildren())[-1] != child
+			# and this is not an ARG_DELIMITER
 			and type(child) != tree.Tree.TerminalNodeImpl
 		):
 			self.st[-1] += b","
 
 	def enterAssignment(self, ctx):
+		"""Assignment must be handeled as a whole to use the Namespace walrus
+		method"""
+
+		# currently does not handle index assignment
 		if ctx.NAME():
 			self.st.append(bytearray(b""))
 
 	def exitAssignment(self, ctx):
+		"""Add code to call the Namespace walrus method with arguments"""
+
 		val = self.st.pop()
 		py_assign = (
 			b"namespace.walrus("
@@ -222,9 +268,15 @@ class switchPrintListener(switchListener):
 		self.st[-1] += py_assign
 
 	def enterAccess(self, ctx):
+		"""Start keeping track of how many children have passed"""
+
+		# must be ctx attribute so that nested access works
+		# otherwise the counter would be reset to 0
 		ctx._child_counter = 0
 
 	def nextChildAccess(self, ctx, child):
+		"""Add open and closing brackets for indexing"""
+
 		if (
 			child.getText() != "n" and
 			1 < ctx._child_counter < len(tuple(ctx.getChildren())) - 1
@@ -240,10 +292,15 @@ class switchPrintListener(switchListener):
 		ctx._child_counter += 1
 
 	def exitAccess(self, ctx):
+		"""Stop child counting and clean up"""
+
 		del ctx._child_counter
 
 
 def comp(input, file=False):
+	"""Parse the Switch source code and walk it, then return the python
+	code"""
+
 	output = bytearray("", "utf-8")
 
 	namespace = {
@@ -275,6 +332,9 @@ def comp(input, file=False):
 
 
 def main():
+	"""Determine what the program should take input and what output is
+	wanted"""
+
 	try:
 		assert(sys.argv[1] == "-f")
 		output = comp(sys.argv[2], True)
