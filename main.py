@@ -185,43 +185,15 @@ class switchPrintListener(switchListener):
 
 		self.st[-1] += b")"
 
-	def enterMult(self, ctx):
+	def enterMath_op(self, ctx):
 		"""Add the function that corosponds the the correct operator"""
 
 		ops = {
 			"t": "mul",
 			"v": "truediv",
-			"u": "mod"
-		}
-
-		self.st[-1] += bytes(
-			ops[ctx.children[0].getText()],
-			"utf-8"
-		) + b"("
-
-	def exitMult(self, ctx):
-		"""Close the function call"""
-
-		self.st[-1] += b")"
-
-	def enterAdd_sub_expr(self, ctx):
-		"""Add the function that corosponds the correct operator"""
-
-		ops = {
+			"u": "mod",
 			"p": "add",
-			"m": "sub"
-		}
-
-		self.st[-1] += bytes(
-			ops[ctx.children[0].getText()],
-			"utf-8"
-		) + b"("
-
-	def exitAdd_sub_expr(self, ctx):
-		self.st[-1] += b")"
-
-	def enterComp(self, ctx):
-		ops = {
+			"m": "sub",
 			"j": "less_than",
 			"g": "greater_than",
 			"q": "equal"
@@ -232,7 +204,9 @@ class switchPrintListener(switchListener):
 			"utf-8"
 		) + b"("
 
-	def exitComp(self, ctx):
+	def exitMath_op(self, ctx):
+		"""Close the function call"""
+
 		self.st[-1] += b")"
 
 	def nextChildArgs(self, ctx, child):

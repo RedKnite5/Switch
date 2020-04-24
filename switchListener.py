@@ -71,21 +71,12 @@ class switchListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by switchParser#mult.
-    def enterMult(self, ctx:switchParser.MultContext):
+    # Enter a parse tree produced by switchParser#math_op.
+    def enterMath_op(self, ctx:switchParser.Math_opContext):
         pass
 
-    # Exit a parse tree produced by switchParser#mult.
-    def exitMult(self, ctx:switchParser.MultContext):
-        pass
-
-
-    # Enter a parse tree produced by switchParser#add_sub_expr.
-    def enterAdd_sub_expr(self, ctx:switchParser.Add_sub_exprContext):
-        pass
-
-    # Exit a parse tree produced by switchParser#add_sub_expr.
-    def exitAdd_sub_expr(self, ctx:switchParser.Add_sub_exprContext):
+    # Exit a parse tree produced by switchParser#math_op.
+    def exitMath_op(self, ctx:switchParser.Math_opContext):
         pass
 
 
@@ -104,15 +95,6 @@ class switchListener(ParseTreeListener):
 
     # Exit a parse tree produced by switchParser#access.
     def exitAccess(self, ctx:switchParser.AccessContext):
-        pass
-
-
-    # Enter a parse tree produced by switchParser#comp.
-    def enterComp(self, ctx:switchParser.CompContext):
-        pass
-
-    # Exit a parse tree produced by switchParser#comp.
-    def exitComp(self, ctx:switchParser.CompContext):
         pass
 
 
