@@ -14,6 +14,9 @@ class SwitchError(SyntaxError):
 	pass
 
 class MyErrorListener(ErrorListener):
+	"""Raise SwitchErrors on Antlr errors not just print statements to
+	stderr"""
+
 	def __init__(self):
 		super(MyErrorListener, self).__init__()
 
