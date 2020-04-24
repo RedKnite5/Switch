@@ -62,7 +62,7 @@ class switchPrintListener(switchListener):
 		self.out = output
 		self.ns = ns
 		self.indent = 0
-	
+
 	def enterSwitch_file(self, ctx):
 		self.st[-1] += (
 			b"from switch_builtins import *\n"
@@ -71,18 +71,18 @@ class switchPrintListener(switchListener):
 
 	def enterWhile_loop(self, ctx):
 		self.st[-1] += b" " * self.indent + b"while "
-	
+
 	def enterWhile_test(self, ctx):
 		self.st.append(bytearray(b""))
-	
+
 	def exitWhile_test(self, ctx):
 		val = self.st.pop()
 		self.st[-1] += val
 		self.st[-1] += b":\n"
-	
+
 	def enterWhile_block(self, ctx):
 		self.indent += 1
-	
+
 	def exitWhile_block(self, ctx):
 		self.indent -= 1
 
@@ -158,7 +158,7 @@ class switchPrintListener(switchListener):
 			"v": "truediv",
 			"u": "mod"
 		}
-		
+	
 		self.st[-1] += bytes(
 			ops[ctx.children[0].getText()],
 			"utf-8"
@@ -172,7 +172,7 @@ class switchPrintListener(switchListener):
 			"p": "add",
 			"m": "sub"
 		}
-		
+	
 		self.st[-1] += bytes(
 			ops[ctx.children[0].getText()],
 			"utf-8"
@@ -187,7 +187,7 @@ class switchPrintListener(switchListener):
 			"g": "greater_than",
 			"q": "equal"
 		}
-		
+	
 		self.st[-1] += bytes(
 			ops[ctx.children[0].getText()],
 			"utf-8"
@@ -195,7 +195,7 @@ class switchPrintListener(switchListener):
 
 	def exitComp(self, ctx):
 		self.st[-1] += b")"
-	
+
 	def nextChildArgs(self, ctx, child):
 		if (
 			tuple(ctx.getChildren())[-1] != child
@@ -220,22 +220,22 @@ class switchPrintListener(switchListener):
 
 	def enterAccess(self, ctx):
 		ctx._child_counter = 0
-	
+
 	def nextChildAccess(self, ctx, child):
 		if (
-			child.getText() != "n" and 
+			child.getText() != "n" and
 			1 < ctx._child_counter < len(tuple(ctx.getChildren())) - 1
 		):
 			self.st[-1] += b"]"
 
 		if (
-			child.getText() != "n" and 
+			child.getText() != "n" and
 			0 < ctx._child_counter < len(tuple(ctx.getChildren())) - 2
 		):
 			self.st[-1] += b"["
-		
+
 		ctx._child_counter += 1
-	
+
 	def exitAccess(self, ctx):
 		del ctx._child_counter
 
@@ -248,7 +248,7 @@ def comp(input, file=False):
 		":": "SwitchMap",
 		"...": "SwitchList",
 	}
-	
+
 	if file:
 		lexer = switchLexer(FileStream(input))
 	else:
@@ -271,7 +271,7 @@ def comp(input, file=False):
 	return output
 
 
-if __name__ == '__main__':
+def main():
 	try:
 		assert(sys.argv[1] == "-f")
 		output = comp(sys.argv[2], True)
@@ -280,12 +280,29 @@ if __name__ == '__main__':
 	except IndexError:
 		pass
 
-	print("Output:\n", output.decode(), sep="")
+	minimal = None
+	if "-m" in sys.argv:
+		minimal = "m"
+	elif "-c" in sys.argv:
+		minimal = "c"
 
-	print("\nRun: ")
-	try:
-		exec(output.decode())
-	except Exception:
-		print("Switch Excpetion: ")
-		raise
+	if not minimal:
+		print("Output:")
+
+	if minimal != "m":
+		print(output.decode())
+
+	if not minimal:
+		print("\nRun:")
+
+	if minimal != "c":
+		try:
+			exec(output.decode())
+		except Exception:
+			print("Switch Excpetion: ")
+			raise
+
+if __name__ == '__main__':
+	main()
+
 
