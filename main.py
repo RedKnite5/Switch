@@ -1,4 +1,4 @@
-#!/cygdrive/c/Users/RedKnite/Appdata/local/programs/Python/Python38/python.exe
+#!/mnt/c/Users/RedKnite/Appdata/local/programs/Python/Python38/python.exe
 
 from antlr4 import *
 from switchLexer import switchLexer
@@ -17,18 +17,15 @@ class MyErrorListener(ErrorListener):
 	"""Raise SwitchErrors on Antlr errors not just print statements to
 	stderr"""
 
-	def __init__(self):
-		super(MyErrorListener, self).__init__()
-
 	def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
-		raise SwitchError("line " + str(line) + ":" + str(column) + " " + msg)
+		raise SwitchError(f"line {line}:{column} {msg}")
 
 	def reportAmbiguity(self, recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs):
-		#raise SwitchError("Ambiguity")
+		#raise SwitchError(f"Ambiguity: {startIndex}:{stopIndex}")
 		pass
 
 	def reportAttemptingFullContext(self, recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs):
-		#raise SwitchError("AttemptingFullContext")
+		#raise SwitchError("AttemptingFullContext: " + str(conflictingAlts))
 		pass
 
 	def reportContextSensitivity(self, recognizer, dfa, startIndex, stopIndex, prediction, configs):
@@ -46,8 +43,8 @@ class MyWalker(ParseTreeWalker):
 			return
 		self.enterRule(listener, t)
 		for child in t.getChildren():
-			self.walk(listener, child)
 			self.nextChildRule(listener, t, child)
+			self.walk(listener, child)
 		self.exitRule(listener, t)
 
 	def nextChildRule(self, listener, r, child):
@@ -61,6 +58,7 @@ class MyWalker(ParseTreeWalker):
 			switchParser.ArgsContext: listener.nextChildArgs,
 			switchParser.CallContext: listener.nextChildCall,
 			switchParser.AccessContext: listener.nextChildAccess,
+			switchParser.AssignmentContext: listener.nextChildAssignment,
 		}
 		ctx = r.getRuleContext()
 		map.get(type(ctx), lambda a, b: None)(ctx, child)
@@ -176,7 +174,7 @@ class switchPrintListener(switchListener):
 	def nextChildCall(self, ctx, child):
 		"""Add an open paren only if this is the second child"""
 
-		if self.call_start == 1:
+		if self.call_start == 2:
 			self.st[-1] += b"("
 		self.call_start += 1
 
@@ -214,7 +212,7 @@ class switchPrintListener(switchListener):
 
 		if (
 			# if this is not the last child
-			tuple(ctx.getChildren())[-1] != child
+			tuple(ctx.getChildren())[0] != child
 			# and this is not an ARG_DELIMITER
 			and type(child) != tree.Tree.TerminalNodeImpl
 		):
@@ -224,22 +222,42 @@ class switchPrintListener(switchListener):
 		"""Assignment must be handeled as a whole to use the Namespace walrus
 		method"""
 
-		# currently does not handle index assignment
-		if ctx.NAME():
+		# bytearray for the value to be assigned
+		self.st.append(bytearray(b""))
+
+	def nextChildAssignment(self, ctx, child):
+		"""Prepare to handle access assignment"""
+
+		if isinstance(child, switchParser.AccessContext):
+			# bytearray for the access to be assigned to
 			self.st.append(bytearray(b""))
+			# var to indicate to the AccessContext that it needs to treat
+			# the last access differently
+			child._split_last = True
+
+		# is an access expression
+		if not ctx.NAME() and isinstance(child, switchParser.ExprContext):
+			# pull the bytearray for the value forward and push
+			# the bytearray for the access backward
+			self.st[-1], self.st[-2] = self.st[-2], self.st[-1]
 
 	def exitAssignment(self, ctx):
 		"""Add code to call the Namespace walrus method with arguments"""
 
-		val = self.st.pop()
-		py_assign = (
-			b"namespace.walrus("
-			+ bytes(repr(ctx.NAME().getText()), "utf-8")
-			+ b", "
-			+ val
-			+ b")"
-		)
-		self.st[-1] += py_assign
+		if ctx.NAME():
+			val = self.st.pop()
+			py_assign = (
+				b"namespace.walrus("
+				+ bytes(repr(ctx.NAME().getText()), "utf-8")
+				+ b", "
+				+ val
+				+ b")"
+			)
+			self.st[-1] += py_assign
+		else:
+			val = self.st.pop()
+			obj = self.st.pop()
+			self.st[-1] += obj[0] + b".walrus(" + obj[1] + b"," + val + b")"
 
 	def enterAccess(self, ctx):
 		"""Start keeping track of how many children have passed"""
@@ -251,17 +269,31 @@ class switchPrintListener(switchListener):
 	def nextChildAccess(self, ctx, child):
 		"""Add open and closing brackets for indexing"""
 
+		# Do the normal thing if not splitting last access off
 		if (
-			child.getText() != "n" and
-			1 < ctx._child_counter < len(tuple(ctx.getChildren())) - 1
+			# _split_last may not exist so the getattr is helpful
+			not getattr(ctx, "_split_last", None)
+			or ctx._child_counter < len(tuple(ctx.getChildren())) - 2
 		):
-			self.st[-1] += b"]"
+			if (
+				child.getText() != "n" and
+				3 < ctx._child_counter < len(tuple(ctx.getChildren())) - 0
+			):
+				self.st[-1] += b"]"
 
-		if (
-			child.getText() != "n" and
-			0 < ctx._child_counter < len(tuple(ctx.getChildren())) - 2
-		):
-			self.st[-1] += b"["
+			if (
+				child.getText() not in "n" and
+				1 < ctx._child_counter < len(tuple(ctx.getChildren())) - 1
+			):
+				self.st[-1] += b"["
+		else:
+			# add additional bytearray for the last part of the access
+			if ctx._child_counter < len(tuple(ctx.getChildren())) - 1:
+				self.st.append(bytearray(b""))
+			else:
+				p2 = self.st.pop()
+				p1 = self.st.pop()
+				self.st.append((p1, p2))
 
 		ctx._child_counter += 1
 
@@ -269,6 +301,10 @@ class switchPrintListener(switchListener):
 		"""Stop child counting and clean up"""
 
 		del ctx._child_counter
+		try:
+			del ctx._split_last
+		except AttributeError:
+			pass
 
 
 def comp(input, file=False):

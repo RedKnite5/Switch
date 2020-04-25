@@ -139,7 +139,7 @@ class Namespace(dict):
 		self[key] = value
 		return value
 
-class SwitchList(dict):
+class SwitchList(Namespace):
 	"""A list for Switch"""
 
 	def __init__(self, *args):
@@ -162,7 +162,7 @@ class SwitchList(dict):
 			s += repr(self[i]) + ","
 		return s[:-1] + "]"
 
-class SwitchMap(dict):
+class SwitchMap(Namespace):
 	"""A dictionary for Switch"""
 
 	def __init__(self, *args):

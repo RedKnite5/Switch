@@ -61,14 +61,13 @@ class switchParser ( Parser ):
     sharedContextCache = PredictionContextCache()
 
     literalNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "'L'", "'n'", 
-                     "'l'", "<INVALID>", "'e'", "'i'", "'c'", "'Wb'", "'W'", 
+                     "'l'", "<INVALID>", "'e'", "'i'", "'c'", "'B'", "'W'", 
                      "'w'", "'S'", "'s'" ]
 
     symbolicNames = [ "<INVALID>", "STRING", "WHITESPACE", "ENDLINE", "ARG_DELIM", 
                       "END_CALL", "MATH_OPS", "ASSIGNMENT_OP", "ACCESS_OP", 
-                      "CALL_OP", "WHILE_BLOCK_DELIM", "WHILE_LOOP_DELIM", 
-                      "WHILE_LOOP_END", "STRING_START", "NEXT_CHAR", "INT", 
-                      "FLOAT", "NAME" ]
+                      "CALL_OP", "BLOCK_DELIM", "WHILE_LOOP_DELIM", "WHILE_LOOP_END", 
+                      "STRING_START", "NEXT_CHAR", "INT", "FLOAT", "NAME" ]
 
     RULE_switch_file = 0
     RULE_while_loop = 1
@@ -97,7 +96,7 @@ class switchParser ( Parser ):
     ASSIGNMENT_OP=7
     ACCESS_OP=8
     CALL_OP=9
-    WHILE_BLOCK_DELIM=10
+    BLOCK_DELIM=10
     WHILE_LOOP_DELIM=11
     WHILE_LOOP_END=12
     STRING_START=13
@@ -291,8 +290,8 @@ class switchParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
 
-        def WHILE_BLOCK_DELIM(self):
-            return self.getToken(switchParser.WHILE_BLOCK_DELIM, 0)
+        def BLOCK_DELIM(self):
+            return self.getToken(switchParser.BLOCK_DELIM, 0)
 
         def WHILE_LOOP_END(self):
             return self.getToken(switchParser.WHILE_LOOP_END, 0)
@@ -333,7 +332,7 @@ class switchParser ( Parser ):
         try:
             self.enterOuterAlt(localctx, 1)
             self.state = 39
-            self.match(switchParser.WHILE_BLOCK_DELIM)
+            self.match(switchParser.BLOCK_DELIM)
             self.state = 44
             self._errHandler.sync(self)
             _la = self._input.LA(1)

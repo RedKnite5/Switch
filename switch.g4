@@ -4,7 +4,7 @@ switch_file  : (line | while_loop)* EOF ;
 
 while_loop  : while_test while_block                                ;
 while_test  : WHILE_LOOP_DELIM expr                                 ;
-while_block : WHILE_BLOCK_DELIM (line | while_loop)* WHILE_LOOP_END ;
+while_block : BLOCK_DELIM (line | while_loop)* WHILE_LOOP_END ;
 
 line  :  ( (expr | while_loop) EOF | (expr | while_loop)? ENDLINE ) ;
 
@@ -40,7 +40,7 @@ ASSIGNMENT_OP  : 'e'        ;
 ACCESS_OP      : 'i'        ;
 CALL_OP        : 'c'        ;
 
-WHILE_BLOCK_DELIM : 'Wb' ;
+BLOCK_DELIM : 'B' ;
 WHILE_LOOP_DELIM  : 'W'  ;
 WHILE_LOOP_END    : 'w'  ;
 

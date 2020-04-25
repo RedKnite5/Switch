@@ -1,3 +1,4 @@
+#!/mnt/c/Users/RedKnite/Appdata/local/programs/Python/Python38/python.exe
 
 import sys
 import unittest
@@ -16,7 +17,6 @@ def run(tester, source_code, output, file=False):
 	code = comp(source_code, file=file)
 	exec(code)
 	tester.assertEqual(sys.stdout.getvalue(), output)
-
 
 
 class TestPrimitivePrinting(unittest.TestCase):
@@ -203,7 +203,14 @@ class TestAssignment(unittest.TestCase):
 		run(self, "e*nZlLc->n*lLe*nOlLc->n*l", "01")
 
 	def test_variables_can_change_in_loop(self):
-		run(self, "e?nZlL W j?nOZOZl Wb c->n?l L e?np?nOll L w", "0123456789")
+		run(self, "e?nZlL W j?nOZOZl B c->n?l L e?np?nOll L w", "0123456789")
+
+	def test_assignment_to_access(self):
+		run(self,
+			"""e*n c...n OZ n OZZ n OZZZl lL
+			e i*nZl n OO lL
+			c->n*l""",
+			"[3,4,8]")
 
 
 class TestMath(unittest.TestCase):
@@ -373,17 +380,17 @@ class TestWhileLoop(unittest.TestCase):
 		sys.stdout = old_stdout
 
 	def test_while_false_wont_start(self):
-		run(self, "W Z Wb c->nOlL w", "")
+		run(self, "W Z B c->nOlL w", "")
 
 	def test_normal_while_loop(self):
-		run(self, "e!n OOO lL W g!nZl Wb c->n e!n m!nOl ll L w", "6543210")
+		run(self, "e!n OOO lL W g!nZl B c->n e!n m!nOl ll L w", "6543210")
 
 	def test_nested_while_loop(self):
 		run(self,
 			"""e!n OO l L
-			W!Wb
+			W!B
 			e*n OZZ l L
-			W*Wb c->n p*n!l lL  e*n m*nOl lL w
+			W*B c->n p*n!l lL  e*n m*nOl lL w
 			e!n m!nOl lL w
 			""",
 			"765465435432")
@@ -487,6 +494,7 @@ class TestObjectsDirectly(unittest.TestCase):
 	def test_SwitchFrac_equality_with_ints_given_float(self):
 		self.assertEqual(SwitchFrac(6.0), 6)
 
+class TestCLI(unittest.TestCase):
 	def test_main(self):
 		o = sub.run("python main.py c->nOl", capture_output=True, encoding="utf-8")
 		self.assertEqual(o.returncode, 0)
