@@ -10,8 +10,10 @@ import sys
 
 __all__ = ["comp", "SwitchError"]
 
+
 class SwitchError(SyntaxError):
 	pass
+
 
 class MyErrorListener(ErrorListener):
 	"""Raise SwitchErrors on Antlr errors not just print statements to
@@ -20,16 +22,39 @@ class MyErrorListener(ErrorListener):
 	def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
 		raise SwitchError(f"line {line}:{column} {msg}")
 
-	def reportAmbiguity(self, recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs):
+	def reportAmbiguity(
+		self,
+		recognizer,
+		dfa,
+		startIndex,
+		stopIndex,
+		exact,
+		ambigAlts,
+		configs):
 		#raise SwitchError(f"Ambiguity: {startIndex}:{stopIndex}")
 		pass
 
-	def reportAttemptingFullContext(self, recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs):
+	def reportAttemptingFullContext(
+		self,
+		recognizer,
+		dfa,
+		startIndex,
+		stopIndex,
+		conflictingAlts,
+		configs):
 		#raise SwitchError("AttemptingFullContext: " + str(conflictingAlts))
 		pass
 
-	def reportContextSensitivity(self, recognizer, dfa, startIndex, stopIndex, prediction, configs):
+	def reportContextSensitivity(
+		self,
+		recognizer,
+		dfa,
+		startIndex,
+		stopIndex,
+		prediction,
+		configs):
 		raise SwitchError("ContextSensitivity")
+
 
 class MyWalker(ParseTreeWalker):
 	"""Support the nextChildf unction"""
@@ -62,7 +87,6 @@ class MyWalker(ParseTreeWalker):
 		}
 		ctx = r.getRuleContext()
 		map.get(type(ctx), lambda a, b: None)(ctx, child)
-
 
 
 class switchPrintListener(switchListener):
@@ -114,12 +138,6 @@ class switchPrintListener(switchListener):
 	def enterLine(self, ctx):
 		"""Indent normal lines as well as while loops"""
 
-		#children = ctx.getChildren()
-		#for child in children:
-		#	if isinstance(
-		#		child,
-		#		(switchParser.ExprContext, switchParser.While_loopContext)
-		#	):
 		self.st[-1] += b" " * self.indent
 
 	def exitLine(self, ctx):
@@ -169,14 +187,14 @@ class switchPrintListener(switchListener):
 	def enterCall(self, ctx):
 		"""Start keeping track of how many children have passed"""
 
-		self.call_start = 0
+		ctx.call_start = 0
 
 	def nextChildCall(self, ctx, child):
 		"""Add an open paren only if this is the second child"""
 
-		if self.call_start == 2:
+		if ctx.call_start == 2:
 			self.st[-1] += b"("
-		self.call_start += 1
+		ctx.call_start += 1
 
 	def exitCall(self, ctx):
 		"""Add a close paren to function call"""
@@ -374,6 +392,7 @@ def main():
 		except Exception:
 			print("Switch Excpetion: ")
 			raise
+
 
 if __name__ == '__main__':
 	main()

@@ -13,6 +13,7 @@ import subprocess as sub
 old_stdout = sys.stdout
 old_stderr = sys.stderr
 
+
 def run(tester, source_code, output, file=False):
 	code = comp(source_code, file=file)
 	exec(code)
@@ -446,6 +447,14 @@ class TestListAndMap(unittest.TestCase):
 			""",
 			"[3,2,0]")
 
+	def test_list_len(self):
+		run(self,
+			"""c->n
+				i
+				c...n O n OZ n OO n OZZl
+				n  SOOZOOZZ sOOZZOZO sOOZOOOZ l l""",
+			"4")
+
 	def test_map_odd_num_elements_raises_error(self):
 		code = comp("e*n c:n OnZ n OO ll")
 		self.assertRaisesRegex(
@@ -480,19 +489,33 @@ class TestObjectsDirectly(unittest.TestCase):
 		self.assertFalse(SwitchFrac(5.5).is_integer())
 
 	def test_SwitchFrac_string_by_float_mul(self):
-		self.assertRaises(TypeError, lambda a, b: a*b, SwitchFrac(1.1), "hi")
+		self.assertRaises(
+			TypeError,
+			lambda a, b: a * b,
+			SwitchFrac(1.1),
+			"hi"
+		)
 
 	def test_SwitchFrac_string_by_float_rmul(self):
-		self.assertRaises(TypeError, lambda a, b: a*b, "hi", SwitchFrac(1.1))
+		self.assertRaises(
+			TypeError,
+			lambda a, b: a * b,
+			"hi",
+			SwitchFrac(1.1)
+		)
 
 	def test_SwitchFrac_add_float(self):
-		self.assertEqual(SwitchFrac(1.1).limit_denominator() + .4, SwitchFrac(1.5).limit_denominator())
+		self.assertEqual(
+			SwitchFrac(1.1).limit_denominator() + .4,
+			SwitchFrac(1.5).limit_denominator()
+		)
 
 	def test_SwitchFrac_equality_with_floats(self):
 		self.assertEqual(SwitchFrac(1.1), 1.1)
 
 	def test_SwitchFrac_equality_with_ints_given_float(self):
 		self.assertEqual(SwitchFrac(6.0), 6)
+
 
 class TestCLI(unittest.TestCase):
 	def test_main(self):
@@ -501,35 +524,58 @@ class TestCLI(unittest.TestCase):
 		self.assertTrue(o.stdout.startswith("Output:\n"))
 
 	def test_main_f(self):
-		o = sub.run("python main.py -f hello_world.sw", capture_output=True, encoding="utf-8")
+		o = sub.run(
+			"python main.py -f hello_world.sw",
+			capture_output=True,
+			encoding="utf-8"
+		)
 		self.assertEqual(o.returncode, 0)
 		self.assertTrue(o.stdout.startswith("Output:\n"))
 
 	def test_main_m(self):
-		o = sub.run("python main.py c->nOl -m", capture_output=True, encoding="utf-8")
+		o = sub.run(
+			"python main.py c->nOl -m",
+			capture_output=True,
+			encoding="utf-8"
+		)
 		self.assertEqual(o.returncode, 0)
 		self.assertEqual(o.stdout, "1")
 
 	def test_main_m_f(self):
-		o = sub.run("python main.py -f hello_world.sw -m", capture_output=True, encoding="utf-8")
+		o = sub.run(
+			"python main.py -f hello_world.sw -m",
+			capture_output=True,
+			encoding="utf-8"
+		)
 		self.assertEqual(o.returncode, 0)
 		self.assertEqual(o.stdout, "Hello World")
 
 	def test_main_c(self):
-		o = sub.run("python main.py c->nOl -c", capture_output=True, encoding="utf-8")
+		o = sub.run(
+			"python main.py c->nOl -c",
+			capture_output=True,
+			encoding="utf-8"
+		)
 		self.assertEqual(o.returncode, 0)
 		self.assertTrue(o.stdout.startswith("from switch_builtins import *"))
 
 	def test_main_c_f(self):
-		o = sub.run("python main.py -f hello_world.sw -c", capture_output=True, encoding="utf-8")
+		o = sub.run(
+			"python main.py -f hello_world.sw -c",
+			capture_output=True,
+			encoding="utf-8"
+		)
 		self.assertEqual(o.returncode, 0)
 		self.assertTrue(o.stdout.startswith("from switch_builtins import *"))
 
 	def test_main_m_overrides_c(self):
-		o = sub.run("python main.py c->nOl -c -m", capture_output=True, encoding="utf-8")
+		o = sub.run(
+			"python main.py c->nOl -c -m",
+			capture_output=True,
+			encoding="utf-8"
+		)
 		self.assertEqual(o.returncode, 0)
 		self.assertEqual(o.stdout, "1")
-
 
 
 if __name__ == "__main__":
