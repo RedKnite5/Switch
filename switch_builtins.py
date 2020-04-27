@@ -145,10 +145,6 @@ class SwitchList(Namespace):
 	def __init__(self, *args):
 		super().__init__()
 		self.length = len(args)
-		self.update({
-			"add": lambda a: self.append(a),
-			"pop": lambda: self.pop(self.length - 1),
-		})
 		self.update(dict(enumerate(args)))
 
 	def append(self, val):
@@ -161,6 +157,16 @@ class SwitchList(Namespace):
 		except KeyError:
 			if item == "len":
 				return self.length
+			if item == "add":
+				return lambda a: self.append(a)
+			if item == "pop":
+				return lambda: self.pop(self.length - 1)
+
+	def __setitem__(self, key, val):
+		if key in self.keys():
+			super().__setitem__(key, val)
+		else:
+			raise KeyError
 
 	def __str__(self):
 		s = "["

@@ -3,11 +3,11 @@
 import sys
 import unittest
 from io import StringIO
+from subprocess import run as run_pro
 
-from main import *
-from main import main
+from Switch import *
+from Switch import main
 from switch_builtins import *
-import subprocess as sub
 
 
 old_stdout = sys.stdout
@@ -516,66 +516,142 @@ class TestObjectsDirectly(unittest.TestCase):
 	def test_SwitchFrac_equality_with_ints_given_float(self):
 		self.assertEqual(SwitchFrac(6.0), 6)
 
+	def test_equal_true(self):
+		self.assertTrue(equal(1, 1, 2-1))
 
-class TestCLI(unittest.TestCase):
+	def test_equal_false(self):
+		self.assertFalse(equal(4, 5, 2+2))
+
+	def test_less_than_true(self):
+		self.assertTrue(less_than(3, 4, 5.5, 5.51))
+
+	def test_less_than_false(self):
+		self.assertFalse(less_than(6, 4, 5.5, 5.51))
+
+	def test_less_than_equal_is_not_less(self):
+		self.assertFalse(less_than(4, 4, 5.5, 5.51))
+
+	def test_greater_than_true(self):
+		self.assertTrue(greater_than(4, 3, 1.1, 1.0))
+
+	def test_greater_than_false(self):
+		self.assertFalse(greater_than(4, 4.4, 1.1, 1.0))
+
+	def test_mod(self):
+		self.assertEqual(mod(10, 3), 1)
+
+	def test_mod_chain(self):
+		self.assertEqual(mod(30, 11, 3), 2)
+
+	def test_truediv(self):
+		self.assertEqual(truediv(30, 3), 10.0)
+
+	def test_truediv_decimal(self):
+		self.assertEqual(truediv(7, 2), 3.5)
+
+	def test_truediv_type(self):
+		self.assertTrue(isinstance(truediv(30, 10), float))
+
+	def test_truediv_chain(self):
+		self.assertEqual(truediv(30, 3, 5), 2)
+
+	def test_mul(self):
+		self.assertEqual(mul(4, 3), 12)
+
+	def test_mul_decimal(self):
+		self.assertEqual(mul(4, 3.5), 14)
+
+	def test_mul_chain(self):
+		self.assertEqual(mul(4, 3, .5), 6)
+
+	def test_mul_string(self):
+		self.assertEqual(mul(4, "*"), "****")
+
+	def test_sub(self):
+		self.assertEqual(sub(2, 1), 1)
+
+	def test_sub_chain(self):
+		self.assertEqual(sub(2, 1, 5), -4)
+
+	def test_add(self):
+		self.assertEqual(add(4, 3), 7)
+
+	def test_add_chain(self):
+		self.assertEqual(add(4, 3, -1), 6)
+
+	def test_add_string(self):
+		self.assertEqual(add("yo", " boi"), "yo boi")
+
+	def test_add_string_chain(self):
+		self.assertEqual(add("yo", " boi", "!"), "yo boi!")
+
+	def test_print_no_nl(self):
+		sys.stdout = StringIO()
+		print_no_nl("Hi", "World")
+		self.assertEqual(sys.stdout.getvalue(), "Hi World")
+		sys.stdout = old_stdout
+
+
+
+class TestCLI(unittest.TestCase):		
 	def test_main(self):
-		o = sub.run("python main.py c->nOl", capture_output=True, encoding="utf-8")
-		self.assertEqual(o.returncode, 0)
-		self.assertTrue(o.stdout.startswith("Output:\n"))
+		out = run_pro("python Switch.py c->nOl", capture_output=True, encoding="utf-8")
+		self.assertEqual(out.returncode, 0)
+		self.assertTrue(out.stdout.startswith("Output:\n"))
 
 	def test_main_f(self):
-		o = sub.run(
-			"python main.py -f hello_world.sw",
+		out = run_pro(
+			"python Switch.py -f hello_world.sw",
 			capture_output=True,
 			encoding="utf-8"
 		)
-		self.assertEqual(o.returncode, 0)
-		self.assertTrue(o.stdout.startswith("Output:\n"))
+		self.assertEqual(out.returncode, 0)
+		self.assertTrue(out.stdout.startswith("Output:\n"))
 
 	def test_main_m(self):
-		o = sub.run(
-			"python main.py c->nOl -m",
+		out = run_pro(
+			"python Switch.py c->nOl -m",
 			capture_output=True,
 			encoding="utf-8"
 		)
-		self.assertEqual(o.returncode, 0)
-		self.assertEqual(o.stdout, "1")
+		self.assertEqual(out.returncode, 0)
+		self.assertEqual(out.stdout, "1")
 
 	def test_main_m_f(self):
-		o = sub.run(
-			"python main.py -f hello_world.sw -m",
+		out = run_pro(
+			"python Switch.py -f hello_world.sw -m",
 			capture_output=True,
 			encoding="utf-8"
 		)
-		self.assertEqual(o.returncode, 0)
-		self.assertEqual(o.stdout, "Hello World")
+		self.assertEqual(out.returncode, 0)
+		self.assertEqual(out.stdout, "Hello World")
 
 	def test_main_c(self):
-		o = sub.run(
-			"python main.py c->nOl -c",
+		out = run_pro(
+			"python Switch.py c->nOl -c",
 			capture_output=True,
 			encoding="utf-8"
 		)
-		self.assertEqual(o.returncode, 0)
-		self.assertTrue(o.stdout.startswith("from switch_builtins import *"))
+		self.assertEqual(out.returncode, 0)
+		self.assertTrue(out.stdout.startswith("from switch_builtins import *"))
 
 	def test_main_c_f(self):
-		o = sub.run(
-			"python main.py -f hello_world.sw -c",
+		out = run_pro(
+			"python Switch.py -f hello_world.sw -c",
 			capture_output=True,
 			encoding="utf-8"
 		)
-		self.assertEqual(o.returncode, 0)
-		self.assertTrue(o.stdout.startswith("from switch_builtins import *"))
+		self.assertEqual(out.returncode, 0)
+		self.assertTrue(out.stdout.startswith("from switch_builtins import *"))
 
 	def test_main_m_overrides_c(self):
-		o = sub.run(
-			"python main.py c->nOl -c -m",
+		out = run_pro(
+			"python Switch.py c->nOl -c -m",
 			capture_output=True,
 			encoding="utf-8"
 		)
-		self.assertEqual(o.returncode, 0)
-		self.assertEqual(o.stdout, "1")
+		self.assertEqual(out.returncode, 0)
+		self.assertEqual(out.stdout, "1")
 
 
 if __name__ == "__main__":

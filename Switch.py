@@ -1,21 +1,28 @@
 #!/mnt/c/Users/RedKnite/Appdata/local/programs/Python/Python38/python.exe
 
-from antlr4 import *
+import sys
+
+#from antlr4 import *
+from antlr4 import (ParseTreeWalker, InputStream, FileStream,
+	CommonTokenStream, ErrorNode, TerminalNode, tree)
+
+from antlr4.error.ErrorListener import ErrorListener
+
 from switchLexer import switchLexer
 from switchListener import switchListener
 from switchParser import switchParser
-from antlr4.error.ErrorListener import ErrorListener
 
-import sys
 
 __all__ = ["comp", "SwitchError"]
 
 
 class SwitchError(SyntaxError):
+	"""Syntax error in the Switch language"""
+
 	pass
 
 
-class MyErrorListener(ErrorListener):
+class ExceptionListener(ErrorListener):
 	"""Raise SwitchErrors on Antlr errors not just print statements to
 	stderr"""
 
@@ -57,43 +64,46 @@ class MyErrorListener(ErrorListener):
 
 
 class MyWalker(ParseTreeWalker):
-	"""Support the nextChildf unction"""
+	"""Support the next_child function"""
 
-	def walk(self, listener, t):
-		if isinstance(t, ErrorNode):
-			listener.visitErrorNode(t)
+	def walk(self, listener, node):
+		if isinstance(node, ErrorNode):
+			listener.visitErrorNode(node)
 			return
-		elif isinstance(t, TerminalNode):
-			listener.visitTerminal(t)
+		if isinstance(node, TerminalNode):
+			listener.visitTerminal(node)
 			return
-		self.enterRule(listener, t)
-		for child in t.getChildren():
-			self.nextChildRule(listener, t, child)
+		self.enterRule(listener, node)
+		for child in node.getChildren():
+			self.next_child_rule(listener, node, child)
 			self.walk(listener, child)
-		self.exitRule(listener, t)
+		self.exitRule(listener, node)
 
-	def nextChildRule(self, listener, r, child):
+	def next_child_rule(self, listener, r, child):
 		"""A function that gets called whenever one of the listed classes
 		moves to the next child while walking"""
 
-		# The classes that will call the nextChild function
-		# nextChild must be implemented for all these classes or
+		# The classes that will call the next_child function
+		# next_child must be implemented for all these classes or
 		# AttributeError will occur
-		map = {
-			switchParser.ArgsContext: listener.nextChildArgs,
-			switchParser.CallContext: listener.nextChildCall,
-			switchParser.AccessContext: listener.nextChildAccess,
-			switchParser.AssignmentContext: listener.nextChildAssignment,
+		call_map = {
+			switchParser.ArgsContext: listener.next_child_args,
+			switchParser.CallContext: listener.next_child_call,
+			switchParser.AccessContext: listener.next_child_access,
+			switchParser.AssignmentContext: listener.next_child_assignment,
 		}
 		ctx = r.getRuleContext()
-		map.get(type(ctx), lambda a, b: None)(ctx, child)
+		call_map.get(type(ctx), lambda a, b: None)(ctx, child)
 
 
-class switchPrintListener(switchListener):
-	def __init__(self, output, ns):
+class SwitchPrintListener(switchListener):
+	"""Compile Switch code to python code while walking through
+	the parse tree"""
+
+	def __init__(self, output, namespace):
 		self.st = [output]
 		self.out = output
-		self.ns = ns
+		self.namespace = namespace
 		self.indent = 0
 
 	def enterSwitch_file(self, ctx):
@@ -163,14 +173,14 @@ class switchPrintListener(switchListener):
 			int_part = int(integer, 2)
 
 			dec_part = 0
-			for d in range(len(decimal)):
-				dec_part += float(decimal[d]) / 2 ** (d + 1)
+			for index, digit in enumerate(decimal):
+				dec_part += float(digit) / 2 ** (index + 1)
 
 			self.st[-1] += bytes(f"SwitchFrac({int_part + dec_part})", "utf-8")
 
 		elif ctx.NAME() is not None:
 			try:
-				self.st[-1] += bytes(self.ns[ctx.getText()], "utf-8")
+				self.st[-1] += bytes(self.namespace[ctx.getText()], "utf-8")
 			except KeyError:
 				self.st[-1] += bytes(
 					"namespace["
@@ -189,7 +199,7 @@ class switchPrintListener(switchListener):
 
 		ctx.call_start = 0
 
-	def nextChildCall(self, ctx, child):
+	def next_child_call(self, ctx, child):
 		"""Add an open paren only if this is the second child"""
 
 		if ctx.call_start == 2:
@@ -225,14 +235,14 @@ class switchPrintListener(switchListener):
 
 		self.st[-1] += b")"
 
-	def nextChildArgs(self, ctx, child):
+	def next_child_args(self, ctx, child):
 		"""Add commas where appropriate"""
 
 		if (
 			# if this is not the last child
 			tuple(ctx.getChildren())[0] != child
 			# and this is not an ARG_DELIMITER
-			and type(child) != tree.Tree.TerminalNodeImpl
+			and not isinstance(child, tree.Tree.TerminalNodeImpl)
 		):
 			self.st[-1] += b","
 
@@ -243,7 +253,7 @@ class switchPrintListener(switchListener):
 		# bytearray for the value to be assigned
 		self.st.append(bytearray(b""))
 
-	def nextChildAssignment(self, ctx, child):
+	def next_child_assignment(self, ctx, child):
 		"""Prepare to handle access assignment"""
 
 		if isinstance(child, switchParser.AccessContext):
@@ -251,7 +261,7 @@ class switchPrintListener(switchListener):
 			self.st.append(bytearray(b""))
 			# var to indicate to the AccessContext that it needs to treat
 			# the last access differently
-			child._split_last = True
+			child.split_last = True
 
 		# is an access expression
 		if not ctx.NAME() and isinstance(child, switchParser.ExprContext):
@@ -282,50 +292,50 @@ class switchPrintListener(switchListener):
 
 		# must be ctx attribute so that nested access works
 		# otherwise the counter would be reset to 0
-		ctx._child_counter = 0
+		ctx.child_counter = 0
 
-	def nextChildAccess(self, ctx, child):
+	def next_child_access(self, ctx, child):
 		"""Add open and closing brackets for indexing"""
 
 		# Do the normal thing if not splitting last access off
 		if (
-			# _split_last may not exist so the getattr is helpful
-			not getattr(ctx, "_split_last", None)
-			or ctx._child_counter < len(tuple(ctx.getChildren())) - 2
+			# split_last may not exist so the getattr is helpful
+			not getattr(ctx, "split_last", None)
+			or ctx.child_counter < len(tuple(ctx.getChildren())) - 2
 		):
 			if (
 				child.getText() != "n" and
-				3 < ctx._child_counter < len(tuple(ctx.getChildren())) - 0
+				3 < ctx.child_counter < len(tuple(ctx.getChildren())) - 0
 			):
 				self.st[-1] += b"]"
 
 			if (
 				child.getText() not in "n" and
-				1 < ctx._child_counter < len(tuple(ctx.getChildren())) - 1
+				1 < ctx.child_counter < len(tuple(ctx.getChildren())) - 1
 			):
 				self.st[-1] += b"["
 		else:
 			# add additional bytearray for the last part of the access
-			if ctx._child_counter < len(tuple(ctx.getChildren())) - 1:
+			if ctx.child_counter < len(tuple(ctx.getChildren())) - 1:
 				self.st.append(bytearray(b""))
 			else:
-				p2 = self.st.pop()
-				p1 = self.st.pop()
-				self.st.append((p1, p2))
+				last_access = self.st.pop()
+				first_accesses = self.st.pop()
+				self.st.append((first_accesses, last_access))
 
-		ctx._child_counter += 1
+		ctx.child_counter += 1
 
 	def exitAccess(self, ctx):
 		"""Stop child counting and clean up"""
 
-		del ctx._child_counter
+		del ctx.child_counter
 		try:
-			del ctx._split_last
+			del ctx.split_last
 		except AttributeError:
 			pass
 
 
-def comp(input, file=False):
+def comp(source, file=False):
 	"""Parse the Switch source code and walk it, then return the python
 	code"""
 
@@ -338,23 +348,23 @@ def comp(input, file=False):
 	}
 
 	if file:
-		lexer = switchLexer(FileStream(input))
+		lexer = switchLexer(FileStream(source))
 	else:
-		lexer = switchLexer(InputStream(input))
+		lexer = switchLexer(InputStream(source))
 
 	stream = CommonTokenStream(lexer)
 	parser = switchParser(stream)
 
 	lexer.removeErrorListeners()
-	lexer.addErrorListener(MyErrorListener())
+	lexer.addErrorListener(ExceptionListener())
 
 	parser.removeErrorListeners()
-	parser.addErrorListener(MyErrorListener())
+	parser.addErrorListener(ExceptionListener())
 
-	tree = parser.switch_file()
-	printer = switchPrintListener(output, namespace)
+	parse_tree = parser.switch_file()
+	printer = SwitchPrintListener(output, namespace)
 	walker = MyWalker()
-	walker.walk(printer, tree)
+	walker.walk(printer, parse_tree)
 
 	return output
 
@@ -364,7 +374,7 @@ def main():
 	wanted"""
 
 	try:
-		assert(sys.argv[1] == "-f")
+		assert sys.argv[1] == "-f"
 		output = comp(sys.argv[2], True)
 	except AssertionError:
 		output = comp(sys.argv[1])
@@ -396,5 +406,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-
-
