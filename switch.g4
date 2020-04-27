@@ -14,12 +14,17 @@ expr  : ( prim_expr
 		| math_op
 		| assignment
 		| access
+		| function
 )       ;
 
-call         : CALL_OP expr (ARG_DELIM args)? END_CALL ;
-math_op      : MATH_OPS args END_CALL ;
-assignment   : ASSIGNMENT_OP (NAME | access) ARG_DELIM expr END_CALL ;
-access       : ACCESS_OP expr ARG_DELIM expr (ARG_DELIM expr)* END_CALL ;
+
+function   : FUNCTION_DELIM (NAME (ARG_DELIM NAME)*)?
+			 BLOCK_DELIM line* FUNCTION_END             ;
+
+call       : CALL_OP expr (ARG_DELIM args)? END_CALL ;
+math_op    : MATH_OPS args END_CALL ;
+assignment : ASSIGNMENT_OP (NAME | access) ARG_DELIM expr END_CALL ;
+access     : ACCESS_OP expr ARG_DELIM expr (ARG_DELIM expr)* END_CALL ;
 
 args : expr (ARG_DELIM expr)* ;
 
@@ -42,8 +47,12 @@ ACCESS_OP      : 'i'        ;
 CALL_OP        : 'c'        ;
 
 BLOCK_DELIM : 'B' ;
+
 WHILE_LOOP_DELIM  : 'W'  ;
 WHILE_LOOP_END    : 'w'  ;
+
+FUNCTION_DELIM    : 'F'  ;
+FUNCTION_END      : 'f'  ;
 
 STRING_START : 'S' ;
 NEXT_CHAR    : 's' ;

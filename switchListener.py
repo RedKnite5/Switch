@@ -62,6 +62,15 @@ class switchListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by switchParser#function.
+    def enterFunction(self, ctx:switchParser.FunctionContext):
+        pass
+
+    # Exit a parse tree produced by switchParser#function.
+    def exitFunction(self, ctx:switchParser.FunctionContext):
+        pass
+
+
     # Enter a parse tree produced by switchParser#call.
     def enterCall(self, ctx:switchParser.CallContext):
         pass
