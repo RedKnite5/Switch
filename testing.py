@@ -463,6 +463,24 @@ class TestListAndMap(unittest.TestCase):
 			exec,
 			code)
 
+	def test_list_containing_itself_prints(self):
+		run(self,
+			"""
+			e*n c...l lL
+			c i*n SOOZZZZO sOOZZOZZ sOOZZOZZl n *l L
+			c->n*l
+			""",
+			"[[...]]")
+
+	def test_map_containing_itself_prints(self):
+		run(self,
+			"""
+			e*n c:l lL
+			e i*nOl n * lL
+			c->n*l
+			""",
+			"{1:{...}}")
+
 
 class TestFile(unittest.TestCase):
 	def setUp(self):
@@ -590,6 +608,77 @@ class TestObjectsDirectly(unittest.TestCase):
 		print_no_nl("Hi", "World")
 		self.assertEqual(sys.stdout.getvalue(), "Hi World")
 		sys.stdout = old_stdout
+
+	def test_Namespace(self):
+		n = Namespace()
+		self.assertEqual(n.walrus("x", 5), 5)
+		self.assertEqual(n["x"], 5)
+
+	def test_SwitchList(self):
+		l = SwitchList("hi", "bye")
+		self.assertEqual(l[0], "hi")
+		self.assertEqual(l[1], "bye")
+
+	def test_SwitchList_str(self):
+		l = SwitchList("hi", "bye")
+		self.assertEqual(str(l), "['hi','bye']")
+
+	def test_SwitchList_append(self):
+		l = SwitchList("hi", "bye")
+		l._append("die")
+		self.assertEqual(l[0], "hi")
+		self.assertEqual(l[1], "bye")
+		self.assertEqual(l[2], "die")
+
+	def test_SwitchList_append_index(self):
+		l = SwitchList("hi", "bye")
+		l["add"]("die")
+		self.assertEqual(l[0], "hi")
+		self.assertEqual(l[1], "bye")
+		self.assertEqual(l[2], "die")
+
+	def test_SwitchList_empty(self):
+		l = SwitchList()
+		self.assertEqual(str(l), "[]")
+
+	def test_SwitchList_len(self):
+		l = SwitchList("hi", "bye")
+		self.assertEqual(l["len"], 2)
+
+	def test_SwitchList_pop(self):
+		l = SwitchList("hi", "bye")
+		self.assertEqual(l["pop"](), "bye")
+		self.assertEqual(str(l), "['hi']")
+
+	def test_SwitchList_KeyError(self):
+		l = SwitchList("hi", "bye")
+		self.assertRaises(KeyError, l.__getitem__, 2)
+
+	def test_SwitchList_walrus(self):
+		l = SwitchList("hi", "bye")
+		self.assertEqual(l.walrus(1, "die"), "die")
+		self.assertEqual(str(l), "['hi','die']")
+
+	def test_SwitchList_walrus_after_end_KeyError(self):
+		l = SwitchList("hi", "bye")
+		self.assertRaises(KeyError, l.walrus, 2, "die")
+
+	def test_SwitchMap(self):
+		m = SwitchMap("me", "max", "you", "Switch")
+		self.assertEqual(m["me"], "max")
+		self.assertEqual(m["you"], "Switch")
+
+	def test_SwitchMap_str(self):
+		m = SwitchMap("me", "max", "you", "Switch")
+		self.assertEqual(str(m), "{'me':'max','you':'Switch'}")
+
+	def test_SwitchMap_walrus(self):
+		m = SwitchMap("me", "max", "you", "Switch")
+		self.assertEqual(m.walrus("him", "Jeff"), "Jeff")
+		self.assertEqual(str(m), "{'me':'max','you':'Switch','him':'Jeff'}")
+
+	def test_SwitchMap_raises_on_odd(self):
+		self.assertRaises(ValueError, SwitchMap, "key", "arg", "key2")
 
 
 

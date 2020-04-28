@@ -147,7 +147,7 @@ class SwitchList(Namespace):
 		self.length = len(args)
 		self.update(dict(enumerate(args)))
 
-	def append(self, val):
+	def _append(self, val):
 		self.update({self.length: val})
 		self.length += 1
 
@@ -158,9 +158,12 @@ class SwitchList(Namespace):
 			if item == "len":
 				return self.length
 			if item == "add":
-				return lambda a: self.append(a)
+				return lambda a: self._append(a)
 			if item == "pop":
-				return lambda: self.pop(self.length - 1)
+				self.length -= 1
+				return lambda: self.pop(self.length)
+
+			raise
 
 	def __setitem__(self, key, val):
 		if key in self.keys():
@@ -168,11 +171,15 @@ class SwitchList(Namespace):
 		else:
 			raise KeyError
 
-	def __str__(self):
-		s = "["
+	def __repr__(self):
+		s = ""
 		for i in range(self.length):
-			s += repr(self[i]) + ","
-		return s[:-1] + "]"
+			if self[i] is self:
+				s += "[...]" + ("," if i != self.length - 1 else "")
+			else:
+				s += repr(self[i]) + ("," if i != self.length - 1 else "")
+				
+		return f"[{s}]"
 
 class SwitchMap(Namespace):
 	"""A dictionary for Switch"""
@@ -187,11 +194,25 @@ class SwitchMap(Namespace):
 			except StopIteration:
 				raise ValueError("Must have an even number of items")
 
-	def __str__(self):
+	def __repr__(self):
 		s = "{"
 		for key, val in self.items():
-			s += f"{repr(key)}:{repr(val)},"
+			if val is self:
+				s += f"{repr(key)}:{{...}},"
+			else:
+				s += f"{repr(key)}:{repr(val)},"
 		return s[:-1] + "}"
+
+	def keys(self, *args, **kwargs):
+		return SwitchList(super().keys(*args, **kwargs))
+
+	def __getitem__(self, item):
+		try:
+			return super().__getitem__(item)
+		except KeyError:
+			pass
+
+			raise
 
 
 def print_no_nl(*args, **kwargs):
