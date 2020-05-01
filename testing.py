@@ -481,6 +481,28 @@ class TestListAndMap(unittest.TestCase):
 			""",
 			"{1:{...}}")
 
+	def test_list_2cycle_recursion(self):
+		run(self,
+			"""
+			e*n c...nOl lL
+			e&n c...nZl lL
+			c i*n SOOZZZZO sOOZZOZZ sOOZZOZZl n &l L
+			c i&n SOOZZZZO sOOZZOZZ sOOZZOZZl n *l L
+			c->n*l
+			""",
+			"[1,[0,[...]]]")
+
+	def test_map_2cycle_recursion(self):
+		run(self,
+			"""
+			e*n c:nOnOOl lL
+			e&n c:nZnOl lL
+			e i*n OZZ l n &l L
+			e i&n OZZZ l n *l L
+			c->n*l
+			""",
+			"{1:3,4:{0:1,8:{...}}}")
+
 
 class TestFile(unittest.TestCase):
 	def setUp(self):
@@ -679,7 +701,6 @@ class TestObjectsDirectly(unittest.TestCase):
 
 	def test_SwitchMap_raises_on_odd(self):
 		self.assertRaises(ValueError, SwitchMap, "key", "arg", "key2")
-
 
 
 class TestCLI(unittest.TestCase):		

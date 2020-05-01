@@ -1,6 +1,7 @@
 
 from functools import reduce
 from fractions import Fraction
+import reprlib
 
 __all__ = [
 	"SwitchFrac",
@@ -144,24 +145,27 @@ class SwitchList(Namespace):
 
 	def __init__(self, *args):
 		super().__init__()
-		self.length = len(args)
+		self._length = len(args)
 		self.update(dict(enumerate(args)))
 
 	def _append(self, val):
-		self.update({self.length: val})
-		self.length += 1
+		self.update({len(self): val})
+		self._length += 1
+
+	def __len__(self):
+		return self._length
 
 	def __getitem__(self, item):
 		try:
 			return super().__getitem__(item)
 		except KeyError:
 			if item == "len":
-				return self.length
+				return len(self)
 			if item == "add":
 				return lambda a: self._append(a)
 			if item == "pop":
-				self.length -= 1
-				return lambda: self.pop(self.length)
+				self._length -= 1
+				return lambda: self.pop(len(self))
 
 			raise
 
@@ -171,15 +175,14 @@ class SwitchList(Namespace):
 		else:
 			raise KeyError
 
+	@reprlib.recursive_repr("[...]")
 	def __repr__(self):
-		s = ""
-		for i in range(self.length):
-			if self[i] is self:
-				s += "[...]" + ("," if i != self.length - 1 else "")
-			else:
-				s += repr(self[i]) + ("," if i != self.length - 1 else "")
-				
-		return f"[{s}]"
+		s = []
+		for i in range(len(self)):
+			s.append(repr(self[i]))
+
+		return f"[{','.join(s)}]"
+
 
 class SwitchMap(Namespace):
 	"""A dictionary for Switch"""
@@ -194,14 +197,12 @@ class SwitchMap(Namespace):
 			except StopIteration:
 				raise ValueError("Must have an even number of items")
 
+	@reprlib.recursive_repr("{...}")
 	def __repr__(self):
-		s = "{"
+		s = []
 		for key, val in self.items():
-			if val is self:
-				s += f"{repr(key)}:{{...}},"
-			else:
-				s += f"{repr(key)}:{repr(val)},"
-		return s[:-1] + "}"
+			s.append(f"{repr(key)}:{repr(val)}")
+		return f"{{{','.join(s)}}}"
 
 	def keys(self, *args, **kwargs):
 		return SwitchList(super().keys(*args, **kwargs))
