@@ -1,20 +1,23 @@
 #!/mnt/c/Users/RedKnite/Appdata/local/programs/Python/Python38/python.exe
 
+"""Tests for the Switch programming language"""
+
 import sys
 import unittest
 from io import StringIO
 from subprocess import run as run_pro
 
-from Switch import *
-from Switch import main
-from switch_builtins import *
-
+from Switch.Sw import *
+from Switch.switch_builtins import *
 
 old_stdout = sys.stdout
 old_stderr = sys.stderr
 
 
 def run(tester, source_code, output, file=False):
+	if file:
+		from pathlib import Path
+		source_code = Path(__file__).parent.absolute() / source_code
 	code = comp(source_code, file=file)
 	exec(code)
 	tester.assertEqual(sys.stdout.getvalue(), output)
@@ -703,15 +706,21 @@ class TestObjectsDirectly(unittest.TestCase):
 		self.assertRaises(ValueError, SwitchMap, "key", "arg", "key2")
 
 
-class TestCLI(unittest.TestCase):		
+class TestCLI(unittest.TestCase):
+	@classmethod
+	def setUpClass(cls):
+		global Path
+		from pathlib import Path
+
 	def test_main(self):
-		out = run_pro("python Switch.py c->nOl", capture_output=True, encoding="utf-8")
+		out = run_pro("python -m Switch.Sw c->nOl", capture_output=True, encoding="utf-8")
 		self.assertEqual(out.returncode, 0)
 		self.assertTrue(out.stdout.startswith("Output:\n"))
 
 	def test_main_f(self):
+		file = Path(__file__).parent.absolute() / "hello_world.sw"
 		out = run_pro(
-			"python Switch.py -f hello_world.sw",
+			f"python -m Switch.Sw -f {file}",
 			capture_output=True,
 			encoding="utf-8"
 		)
@@ -720,7 +729,7 @@ class TestCLI(unittest.TestCase):
 
 	def test_main_m(self):
 		out = run_pro(
-			"python Switch.py c->nOl -m",
+			"python -m Switch.Sw c->nOl -m",
 			capture_output=True,
 			encoding="utf-8"
 		)
@@ -728,8 +737,9 @@ class TestCLI(unittest.TestCase):
 		self.assertEqual(out.stdout, "1")
 
 	def test_main_m_f(self):
+		file = Path(__file__).parent.absolute() / "hello_world.sw"
 		out = run_pro(
-			"python Switch.py -f hello_world.sw -m",
+			f"python -m Switch.Sw -f {file} -m",
 			capture_output=True,
 			encoding="utf-8"
 		)
@@ -738,25 +748,26 @@ class TestCLI(unittest.TestCase):
 
 	def test_main_c(self):
 		out = run_pro(
-			"python Switch.py c->nOl -c",
+			"python -m Switch.Sw c->nOl -c",
 			capture_output=True,
 			encoding="utf-8"
 		)
 		self.assertEqual(out.returncode, 0)
-		self.assertTrue(out.stdout.startswith("from switch_builtins import *"))
+		self.assertTrue(out.stdout.startswith("from Switch.switch_builtins import *"))
 
 	def test_main_c_f(self):
+		file = Path(__file__).parent.absolute() / "hello_world.sw"
 		out = run_pro(
-			"python Switch.py -f hello_world.sw -c",
+			f"python -m Switch.Sw -f {file} -c",
 			capture_output=True,
 			encoding="utf-8"
 		)
 		self.assertEqual(out.returncode, 0)
-		self.assertTrue(out.stdout.startswith("from switch_builtins import *"))
+		self.assertTrue(out.stdout.startswith("from Switch.switch_builtins import *"))
 
 	def test_main_m_overrides_c(self):
 		out = run_pro(
-			"python Switch.py c->nOl -c -m",
+			"python -m Switch.Sw c->nOl -c -m",
 			capture_output=True,
 			encoding="utf-8"
 		)

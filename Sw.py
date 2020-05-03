@@ -8,9 +8,9 @@ from antlr4 import (ParseTreeWalker, InputStream, FileStream,
 
 from antlr4.error.ErrorListener import ErrorListener
 
-from switchLexer import switchLexer
-from switchListener import switchListener
-from switchParser import switchParser
+from Switch.switchLexer import switchLexer
+from Switch.switchListener import switchListener
+from Switch.switchParser import switchParser
 
 
 __all__ = ["comp", "SwitchError"]
@@ -110,7 +110,7 @@ class SwitchPrintListener(switchListener):
 		"""Add initial setup commands for the Switch language"""
 
 		self.st[-1] += (
-			b"from switch_builtins import *\n"
+			b"from Switch.switch_builtins import *\n"
 			b"namespace = Namespace()\n"
 		)
 
