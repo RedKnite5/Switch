@@ -1,5 +1,7 @@
 #!/mnt/c/Users/RedKnite/Appdata/local/programs/Python/Python38/python.exe
 
+"""The main process of the Switch language"""
+
 import sys
 
 #from antlr4 import *

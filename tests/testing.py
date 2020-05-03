@@ -31,49 +31,31 @@ class TestPrimitivePrinting(unittest.TestCase):
 		sys.stdout = old_stdout
 
 	def test_print_one(self):
-		code = comp("c->nOl")
-		exec(code)
-		self.assertEqual(sys.stdout.getvalue(), "1")
+		run(self, "c->nOl", "1")
 
 	def test_print_four(self):
-		code = comp("c->nOZZl")
-		exec(code)
-		self.assertEqual(sys.stdout.getvalue(), "4")
+		run(self, "c->nOZZl", "4")
 
 	def test_print_thirteen(self):
-		code = comp("c->nOOZOl")
-		exec(code)
-		self.assertEqual(sys.stdout.getvalue(), "13")
+		run(self, "c->nOOZOl", "13")
 
 	def test_lowercase_numbers(self):
-		code = comp("c->noozol")
-		exec(code)
-		self.assertEqual(sys.stdout.getvalue(), "13")
+		run(self, "c->noozol", "13")
 
 	def test_mixedcase_numbers(self):
-		code = comp("c->noOZozl")
-		exec(code)
-		self.assertEqual(sys.stdout.getvalue(), "26")
+		run(self, "c->noOZozl", "26")
 
 	def test_numbers_with_spaces(self):
-		code = comp("c->no  OZ \n o	z\tl")
-		exec(code)
-		self.assertEqual(sys.stdout.getvalue(), "26")
+		run(self, "c->no  OZ \n o	z\tl", "26")
 
 	def test_print_A(self):
-		code = comp("c->nSOZZZZZOl")
-		exec(code)
-		self.assertEqual(sys.stdout.getvalue(), "A")
+		run(self, "c->nSOZZZZZOl", "A")
 
 	def test_print_A_lowercase_numbers(self):
-		code = comp("c->nSozzzzzol")
-		exec(code)
-		self.assertEqual(sys.stdout.getvalue(), "A")
+		run(self, "c->nSozzzzzol", "A")
 
 	def test_print_A_mixedcase_numbers(self):
-		code = comp("c->nSoZZzzzOl")
-		exec(code)
-		self.assertEqual(sys.stdout.getvalue(), "A")
+		run(self, "c->nSoZZzzzOl", "A")
 
 	def test_print_A_lowercase_s_fails(self):
 		self.assertRaises(
@@ -82,12 +64,13 @@ class TestPrimitivePrinting(unittest.TestCase):
 			"c->nsoZZzzzOl")
 
 	def test_print_Hello(self):
-		code = comp("c->nSOZZOZZZsOOZZOZOsOOZOOZZsOOZOOZZsOOZOOOOl")
-		exec(code)
-		self.assertEqual(sys.stdout.getvalue(), "Hello")
+		run(
+			self,
+			"c->nSOZZOZZZsOOZZOZOsOOZOOZZsOOZOOZZsOOZOOOOl",
+			"Hello"
+		)
 
 	def test_print_Hello_uppercase_s_fails(self):
-
 		self.assertRaisesRegex(
 			SwitchError,
 			"line [0-9]+:[0-9]+ no viable alternative at input (.*)",
@@ -95,24 +78,20 @@ class TestPrimitivePrinting(unittest.TestCase):
 			"c->nSOZZOZZZSOOZZOZOSOOZOOZZSOOZOOZZSOOZOOOOl")
 
 	def test_print_Hello_spaces(self):
-		code = comp("c->nSOZZOZZZ sOOZZOZO sOOZOOZZ sOOZOOZZ sOOZOOOOl")
-		exec(code)
-		self.assertEqual(sys.stdout.getvalue(), "Hello")
+		run(
+			self,
+			"c->nSOZZOZZZ sOOZZOZO sOOZOOZZ sOOZOOZZ sOOZOOOOl",
+			"Hello"
+		)
 
 	def test_print_float_1d0(self):
-		code = comp("c->nOdZl")
-		exec(code)
-		self.assertEqual(sys.stdout.getvalue(), "1")
+		run(self, "c->nOdZl", "1")
 
 	def test_print_float_0d25(self):
-		code = comp("c->nZdZOl")
-		exec(code)
-		self.assertEqual(sys.stdout.getvalue(), "0.25")
+		run(self, "c->nZdZOl", "0.25")
 
 	def test_print_float_0d75(self):
-		code = comp("c->nZdOOl")
-		exec(code)
-		self.assertEqual(sys.stdout.getvalue(), "0.75")
+		run(self, "c->nZdOOl", "0.75")
 
 	def test_print_nothing(self):
 		run(self, "c->l", "")
