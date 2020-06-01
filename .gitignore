@@ -3,3 +3,4 @@ experiments.py
 .coverage
 htmlcov
 .vscode
+switch.code-workspace
