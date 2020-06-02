@@ -4,3 +4,4 @@ experiments.py
 htmlcov
 .vscode
 switch.code-workspace
+.antlr

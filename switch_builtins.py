@@ -1,9 +1,14 @@
 
 from functools import reduce
 from fractions import Fraction
+from copy import deepcopy
+from types import ModuleType
 import reprlib
 
+
 __all__ = [
+	"deepcopy",
+	"ModuleType",
 	"SwitchFrac",
 	"Namespace",
 	"SwitchList",

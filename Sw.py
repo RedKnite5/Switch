@@ -3,6 +3,7 @@
 """The main process of the Switch language"""
 
 import sys
+from itertools import takewhile
 
 #from antlr4 import *
 from antlr4 import (ParseTreeWalker, InputStream, FileStream,
@@ -119,7 +120,7 @@ class SwitchPrintListener(switchListener):
 	def enterWhile_loop(self, ctx):
 		"""Indent while loops if they are inside other blocks"""
 
-		self.st[-1] += b" " * self.indent + b"while "
+		self.st[-1] +=  b"while "
 
 	def enterWhile_test(self, ctx):
 		"""While loop tests must be handled seperatly from other statments
@@ -146,6 +147,23 @@ class SwitchPrintListener(switchListener):
 		self.indent -= 1
 
 		self.st[-1] += b"\n"
+
+	def enterFunction(self, ctx):
+		ctx.indent = self.indent
+		self.indent = 1
+		m = tuple(map(lambda a: a.getText(), ctx.getChildren()))
+		args = tuple(takewhile(lambda a: a != "B", m[1:]))
+		print(args)
+		self.st[-1] += (
+			b"exec('''\ndef __f("
+			+ b"".join(b"__arg%d" % i for i in range(len(args)))
+			+ b"):\n namespace.update("
+			+ str({key: "__arg%d" % i for i, key in enumerate(args)}).encode("utf-8")
+			+ b")\n")
+
+	def exitFunction(self, ctx):
+		self.st[-1] += b"''', ns_d := deepcopy({key: (val if not isinstance(val, ModuleType) else val.__dict__) for key, val in globals().items()})) or ns_d['__f']"
+		self.indent = ctx.indent
 
 	def enterLine(self, ctx):
 		"""Indent normal lines as well as while loops"""

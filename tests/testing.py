@@ -486,6 +486,21 @@ class TestListAndMap(unittest.TestCase):
 			"{1:3,4:{0:1,8:{...}}}")
 
 
+class TestFunctionDefinition(unittest.TestCase):
+	def setUp(self):
+		sys.stdout = StringIO()
+
+	def tearDown(self):
+		sys.stdout = old_stdout
+
+	def test_func_def(self):
+		run(self,
+			"""
+			F B c->n.l L f L
+			""",
+			"")
+
+
 class TestFile(unittest.TestCase):
 	def setUp(self):
 		sys.stdout = StringIO()

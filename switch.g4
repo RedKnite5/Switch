@@ -1,13 +1,13 @@
 grammar switch;
 
-switch_file  : (line | while_loop)* EOF ;
+switch_file  : line* EOF ;
 
 
 while_loop  : while_test while_block                                ;
 while_test  : WHILE_LOOP_DELIM expr                                 ;
-while_block : BLOCK_DELIM (line | while_loop)* WHILE_LOOP_END       ;
+while_block : BLOCK_DELIM line* WHILE_LOOP_END                      ;
 
-line  :  ( (expr | while_loop) EOF | (expr | while_loop)? ENDLINE ) ;
+line  :  ( (expr | while_loop) EOF | ((expr | while_loop)? ENDLINE) | while_loop ) ;
 
 expr  : ( prim_expr
 		| call

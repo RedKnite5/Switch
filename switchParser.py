@@ -1,4 +1,4 @@
-# Generated from switch.g4 by ANTLR 4.8
+# Generated from Switch/switch.g4 by ANTLR 4.8
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -12,51 +12,50 @@ else:
 def serializedATN():
     with StringIO() as buf:
         buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\25")
-        buf.write("\u008b\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
+        buf.write("\u008a\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
         buf.write("\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\4\16")
-        buf.write("\t\16\3\2\3\2\7\2\37\n\2\f\2\16\2\"\13\2\3\2\3\2\3\3\3")
-        buf.write("\3\3\3\3\4\3\4\3\4\3\5\3\5\3\5\7\5/\n\5\f\5\16\5\62\13")
-        buf.write("\5\3\5\3\5\3\6\3\6\5\68\n\6\3\6\3\6\3\6\3\6\5\6>\n\6\3")
-        buf.write("\6\5\6A\n\6\3\7\3\7\3\7\3\7\3\7\3\7\5\7I\n\7\3\b\3\b\3")
-        buf.write("\b\3\b\7\bO\n\b\f\b\16\bR\13\b\5\bT\n\b\3\b\3\b\7\bX\n")
-        buf.write("\b\f\b\16\b[\13\b\3\b\3\b\3\t\3\t\3\t\3\t\5\tc\n\t\3\t")
-        buf.write("\3\t\3\n\3\n\3\n\3\n\3\13\3\13\3\13\5\13n\n\13\3\13\3")
-        buf.write("\13\3\13\3\13\3\f\3\f\3\f\3\f\3\f\3\f\7\fz\n\f\f\f\16")
-        buf.write("\f}\13\f\3\f\3\f\3\r\3\r\3\r\7\r\u0084\n\r\f\r\16\r\u0087")
+        buf.write("\t\16\3\2\7\2\36\n\2\f\2\16\2!\13\2\3\2\3\2\3\3\3\3\3")
+        buf.write("\3\3\4\3\4\3\4\3\5\3\5\7\5-\n\5\f\5\16\5\60\13\5\3\5\3")
+        buf.write("\5\3\6\3\6\5\6\66\n\6\3\6\3\6\3\6\3\6\5\6<\n\6\3\6\3\6")
+        buf.write("\5\6@\n\6\3\7\3\7\3\7\3\7\3\7\3\7\5\7H\n\7\3\b\3\b\3\b")
+        buf.write("\3\b\7\bN\n\b\f\b\16\bQ\13\b\5\bS\n\b\3\b\3\b\7\bW\n\b")
+        buf.write("\f\b\16\bZ\13\b\3\b\3\b\3\t\3\t\3\t\3\t\5\tb\n\t\3\t\3")
+        buf.write("\t\3\n\3\n\3\n\3\n\3\13\3\13\3\13\5\13m\n\13\3\13\3\13")
+        buf.write("\3\13\3\13\3\f\3\f\3\f\3\f\3\f\3\f\7\fy\n\f\f\f\16\f|")
+        buf.write("\13\f\3\f\3\f\3\r\3\r\3\r\7\r\u0083\n\r\f\r\16\r\u0086")
         buf.write("\13\r\3\16\3\16\3\16\2\2\17\2\4\6\b\n\f\16\20\22\24\26")
-        buf.write("\30\32\2\3\4\2\3\3\23\25\2\u0091\2 \3\2\2\2\4%\3\2\2\2")
-        buf.write("\6(\3\2\2\2\b+\3\2\2\2\n@\3\2\2\2\fH\3\2\2\2\16J\3\2\2")
-        buf.write("\2\20^\3\2\2\2\22f\3\2\2\2\24j\3\2\2\2\26s\3\2\2\2\30")
-        buf.write("\u0080\3\2\2\2\32\u0088\3\2\2\2\34\37\5\n\6\2\35\37\5")
-        buf.write("\4\3\2\36\34\3\2\2\2\36\35\3\2\2\2\37\"\3\2\2\2 \36\3")
-        buf.write("\2\2\2 !\3\2\2\2!#\3\2\2\2\" \3\2\2\2#$\7\2\2\3$\3\3\2")
-        buf.write("\2\2%&\5\6\4\2&\'\5\b\5\2\'\5\3\2\2\2()\7\r\2\2)*\5\f")
-        buf.write("\7\2*\7\3\2\2\2+\60\7\f\2\2,/\5\n\6\2-/\5\4\3\2.,\3\2")
-        buf.write("\2\2.-\3\2\2\2/\62\3\2\2\2\60.\3\2\2\2\60\61\3\2\2\2\61")
-        buf.write("\63\3\2\2\2\62\60\3\2\2\2\63\64\7\16\2\2\64\t\3\2\2\2")
-        buf.write("\658\5\f\7\2\668\5\4\3\2\67\65\3\2\2\2\67\66\3\2\2\28")
-        buf.write("9\3\2\2\29:\7\2\2\3:A\3\2\2\2;>\5\f\7\2<>\5\4\3\2=;\3")
-        buf.write("\2\2\2=<\3\2\2\2=>\3\2\2\2>?\3\2\2\2?A\7\5\2\2@\67\3\2")
-        buf.write("\2\2@=\3\2\2\2A\13\3\2\2\2BI\5\32\16\2CI\5\20\t\2DI\5")
-        buf.write("\22\n\2EI\5\24\13\2FI\5\26\f\2GI\5\16\b\2HB\3\2\2\2HC")
-        buf.write("\3\2\2\2HD\3\2\2\2HE\3\2\2\2HF\3\2\2\2HG\3\2\2\2I\r\3")
-        buf.write("\2\2\2JS\7\17\2\2KP\7\25\2\2LM\7\6\2\2MO\7\25\2\2NL\3")
-        buf.write("\2\2\2OR\3\2\2\2PN\3\2\2\2PQ\3\2\2\2QT\3\2\2\2RP\3\2\2")
-        buf.write("\2SK\3\2\2\2ST\3\2\2\2TU\3\2\2\2UY\7\f\2\2VX\5\n\6\2W")
-        buf.write("V\3\2\2\2X[\3\2\2\2YW\3\2\2\2YZ\3\2\2\2Z\\\3\2\2\2[Y\3")
-        buf.write("\2\2\2\\]\7\20\2\2]\17\3\2\2\2^_\7\13\2\2_b\5\f\7\2`a")
-        buf.write("\7\6\2\2ac\5\30\r\2b`\3\2\2\2bc\3\2\2\2cd\3\2\2\2de\7")
-        buf.write("\7\2\2e\21\3\2\2\2fg\7\b\2\2gh\5\30\r\2hi\7\7\2\2i\23")
-        buf.write("\3\2\2\2jm\7\t\2\2kn\7\25\2\2ln\5\26\f\2mk\3\2\2\2ml\3")
-        buf.write("\2\2\2no\3\2\2\2op\7\6\2\2pq\5\f\7\2qr\7\7\2\2r\25\3\2")
-        buf.write("\2\2st\7\n\2\2tu\5\f\7\2uv\7\6\2\2v{\5\f\7\2wx\7\6\2\2")
-        buf.write("xz\5\f\7\2yw\3\2\2\2z}\3\2\2\2{y\3\2\2\2{|\3\2\2\2|~\3")
-        buf.write("\2\2\2}{\3\2\2\2~\177\7\7\2\2\177\27\3\2\2\2\u0080\u0085")
-        buf.write("\5\f\7\2\u0081\u0082\7\6\2\2\u0082\u0084\5\f\7\2\u0083")
-        buf.write("\u0081\3\2\2\2\u0084\u0087\3\2\2\2\u0085\u0083\3\2\2\2")
-        buf.write("\u0085\u0086\3\2\2\2\u0086\31\3\2\2\2\u0087\u0085\3\2")
-        buf.write("\2\2\u0088\u0089\t\2\2\2\u0089\33\3\2\2\2\21\36 .\60\67")
-        buf.write("=@HPSYbm{\u0085")
+        buf.write("\30\32\2\3\4\2\3\3\23\25\2\u008f\2\37\3\2\2\2\4$\3\2\2")
+        buf.write("\2\6\'\3\2\2\2\b*\3\2\2\2\n?\3\2\2\2\fG\3\2\2\2\16I\3")
+        buf.write("\2\2\2\20]\3\2\2\2\22e\3\2\2\2\24i\3\2\2\2\26r\3\2\2\2")
+        buf.write("\30\177\3\2\2\2\32\u0087\3\2\2\2\34\36\5\n\6\2\35\34\3")
+        buf.write("\2\2\2\36!\3\2\2\2\37\35\3\2\2\2\37 \3\2\2\2 \"\3\2\2")
+        buf.write("\2!\37\3\2\2\2\"#\7\2\2\3#\3\3\2\2\2$%\5\6\4\2%&\5\b\5")
+        buf.write("\2&\5\3\2\2\2\'(\7\r\2\2()\5\f\7\2)\7\3\2\2\2*.\7\f\2")
+        buf.write("\2+-\5\n\6\2,+\3\2\2\2-\60\3\2\2\2.,\3\2\2\2./\3\2\2\2")
+        buf.write("/\61\3\2\2\2\60.\3\2\2\2\61\62\7\16\2\2\62\t\3\2\2\2\63")
+        buf.write("\66\5\f\7\2\64\66\5\4\3\2\65\63\3\2\2\2\65\64\3\2\2\2")
+        buf.write("\66\67\3\2\2\2\678\7\2\2\38@\3\2\2\29<\5\f\7\2:<\5\4\3")
+        buf.write("\2;9\3\2\2\2;:\3\2\2\2;<\3\2\2\2<=\3\2\2\2=@\7\5\2\2>")
+        buf.write("@\5\4\3\2?\65\3\2\2\2?;\3\2\2\2?>\3\2\2\2@\13\3\2\2\2")
+        buf.write("AH\5\32\16\2BH\5\20\t\2CH\5\22\n\2DH\5\24\13\2EH\5\26")
+        buf.write("\f\2FH\5\16\b\2GA\3\2\2\2GB\3\2\2\2GC\3\2\2\2GD\3\2\2")
+        buf.write("\2GE\3\2\2\2GF\3\2\2\2H\r\3\2\2\2IR\7\17\2\2JO\7\25\2")
+        buf.write("\2KL\7\6\2\2LN\7\25\2\2MK\3\2\2\2NQ\3\2\2\2OM\3\2\2\2")
+        buf.write("OP\3\2\2\2PS\3\2\2\2QO\3\2\2\2RJ\3\2\2\2RS\3\2\2\2ST\3")
+        buf.write("\2\2\2TX\7\f\2\2UW\5\n\6\2VU\3\2\2\2WZ\3\2\2\2XV\3\2\2")
+        buf.write("\2XY\3\2\2\2Y[\3\2\2\2ZX\3\2\2\2[\\\7\20\2\2\\\17\3\2")
+        buf.write("\2\2]^\7\13\2\2^a\5\f\7\2_`\7\6\2\2`b\5\30\r\2a_\3\2\2")
+        buf.write("\2ab\3\2\2\2bc\3\2\2\2cd\7\7\2\2d\21\3\2\2\2ef\7\b\2\2")
+        buf.write("fg\5\30\r\2gh\7\7\2\2h\23\3\2\2\2il\7\t\2\2jm\7\25\2\2")
+        buf.write("km\5\26\f\2lj\3\2\2\2lk\3\2\2\2mn\3\2\2\2no\7\6\2\2op")
+        buf.write("\5\f\7\2pq\7\7\2\2q\25\3\2\2\2rs\7\n\2\2st\5\f\7\2tu\7")
+        buf.write("\6\2\2uz\5\f\7\2vw\7\6\2\2wy\5\f\7\2xv\3\2\2\2y|\3\2\2")
+        buf.write("\2zx\3\2\2\2z{\3\2\2\2{}\3\2\2\2|z\3\2\2\2}~\7\7\2\2~")
+        buf.write("\27\3\2\2\2\177\u0084\5\f\7\2\u0080\u0081\7\6\2\2\u0081")
+        buf.write("\u0083\5\f\7\2\u0082\u0080\3\2\2\2\u0083\u0086\3\2\2\2")
+        buf.write("\u0084\u0082\3\2\2\2\u0084\u0085\3\2\2\2\u0085\31\3\2")
+        buf.write("\2\2\u0086\u0084\3\2\2\2\u0087\u0088\t\2\2\2\u0088\33")
+        buf.write("\3\2\2\2\17\37.\65;?GORXalz\u0084")
         return buf.getvalue()
 
 
@@ -144,13 +143,6 @@ class switchParser ( Parser ):
                 return self.getTypedRuleContext(switchParser.LineContext,i)
 
 
-        def while_loop(self, i:int=None):
-            if i is None:
-                return self.getTypedRuleContexts(switchParser.While_loopContext)
-            else:
-                return self.getTypedRuleContext(switchParser.While_loopContext,i)
-
-
         def getRuleIndex(self):
             return switchParser.RULE_switch_file
 
@@ -172,29 +164,17 @@ class switchParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 30
+            self.state = 29
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << switchParser.STRING) | (1 << switchParser.ENDLINE) | (1 << switchParser.MATH_OPS) | (1 << switchParser.ASSIGNMENT_OP) | (1 << switchParser.ACCESS_OP) | (1 << switchParser.CALL_OP) | (1 << switchParser.WHILE_LOOP_DELIM) | (1 << switchParser.FUNCTION_DELIM) | (1 << switchParser.INT) | (1 << switchParser.FLOAT) | (1 << switchParser.NAME))) != 0):
-                self.state = 28
-                self._errHandler.sync(self)
-                la_ = self._interp.adaptivePredict(self._input,0,self._ctx)
-                if la_ == 1:
-                    self.state = 26
-                    self.line()
-                    pass
-
-                elif la_ == 2:
-                    self.state = 27
-                    self.while_loop()
-                    pass
-
-
-                self.state = 32
+                self.state = 26
+                self.line()
+                self.state = 31
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 33
+            self.state = 32
             self.match(switchParser.EOF)
         except RecognitionException as re:
             localctx.exception = re
@@ -239,9 +219,9 @@ class switchParser ( Parser ):
         self.enterRule(localctx, 2, self.RULE_while_loop)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 35
+            self.state = 34
             self.while_test()
-            self.state = 36
+            self.state = 35
             self.while_block()
         except RecognitionException as re:
             localctx.exception = re
@@ -285,9 +265,9 @@ class switchParser ( Parser ):
         self.enterRule(localctx, 4, self.RULE_while_test)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 38
+            self.state = 37
             self.match(switchParser.WHILE_LOOP_DELIM)
-            self.state = 39
+            self.state = 38
             self.expr()
         except RecognitionException as re:
             localctx.exception = re
@@ -317,13 +297,6 @@ class switchParser ( Parser ):
                 return self.getTypedRuleContext(switchParser.LineContext,i)
 
 
-        def while_loop(self, i:int=None):
-            if i is None:
-                return self.getTypedRuleContexts(switchParser.While_loopContext)
-            else:
-                return self.getTypedRuleContext(switchParser.While_loopContext,i)
-
-
         def getRuleIndex(self):
             return switchParser.RULE_while_block
 
@@ -345,31 +318,19 @@ class switchParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 41
+            self.state = 40
             self.match(switchParser.BLOCK_DELIM)
-            self.state = 46
+            self.state = 44
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << switchParser.STRING) | (1 << switchParser.ENDLINE) | (1 << switchParser.MATH_OPS) | (1 << switchParser.ASSIGNMENT_OP) | (1 << switchParser.ACCESS_OP) | (1 << switchParser.CALL_OP) | (1 << switchParser.WHILE_LOOP_DELIM) | (1 << switchParser.FUNCTION_DELIM) | (1 << switchParser.INT) | (1 << switchParser.FLOAT) | (1 << switchParser.NAME))) != 0):
-                self.state = 44
-                self._errHandler.sync(self)
-                la_ = self._interp.adaptivePredict(self._input,2,self._ctx)
-                if la_ == 1:
-                    self.state = 42
-                    self.line()
-                    pass
-
-                elif la_ == 2:
-                    self.state = 43
-                    self.while_loop()
-                    pass
-
-
-                self.state = 48
+                self.state = 41
+                self.line()
+                self.state = 46
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 49
+            self.state = 47
             self.match(switchParser.WHILE_LOOP_END)
         except RecognitionException as re:
             localctx.exception = re
@@ -389,16 +350,16 @@ class switchParser ( Parser ):
         def EOF(self):
             return self.getToken(switchParser.EOF, 0)
 
-        def ENDLINE(self):
-            return self.getToken(switchParser.ENDLINE, 0)
+        def while_loop(self):
+            return self.getTypedRuleContext(switchParser.While_loopContext,0)
+
 
         def expr(self):
             return self.getTypedRuleContext(switchParser.ExprContext,0)
 
 
-        def while_loop(self):
-            return self.getTypedRuleContext(switchParser.While_loopContext,0)
-
+        def ENDLINE(self):
+            return self.getToken(switchParser.ENDLINE, 0)
 
         def getRuleIndex(self):
             return switchParser.RULE_line
@@ -420,46 +381,51 @@ class switchParser ( Parser ):
         self.enterRule(localctx, 8, self.RULE_line)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 62
+            self.state = 61
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,6,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,4,self._ctx)
             if la_ == 1:
-                self.state = 53
+                self.state = 51
                 self._errHandler.sync(self)
                 token = self._input.LA(1)
                 if token in [switchParser.STRING, switchParser.MATH_OPS, switchParser.ASSIGNMENT_OP, switchParser.ACCESS_OP, switchParser.CALL_OP, switchParser.FUNCTION_DELIM, switchParser.INT, switchParser.FLOAT, switchParser.NAME]:
-                    self.state = 51
+                    self.state = 49
                     self.expr()
                     pass
                 elif token in [switchParser.WHILE_LOOP_DELIM]:
-                    self.state = 52
+                    self.state = 50
                     self.while_loop()
                     pass
                 else:
                     raise NoViableAltException(self)
 
-                self.state = 55
+                self.state = 53
                 self.match(switchParser.EOF)
                 pass
 
             elif la_ == 2:
-                self.state = 59
+                self.state = 57
                 self._errHandler.sync(self)
                 token = self._input.LA(1)
                 if token in [switchParser.STRING, switchParser.MATH_OPS, switchParser.ASSIGNMENT_OP, switchParser.ACCESS_OP, switchParser.CALL_OP, switchParser.FUNCTION_DELIM, switchParser.INT, switchParser.FLOAT, switchParser.NAME]:
-                    self.state = 57
+                    self.state = 55
                     self.expr()
                     pass
                 elif token in [switchParser.WHILE_LOOP_DELIM]:
-                    self.state = 58
+                    self.state = 56
                     self.while_loop()
                     pass
                 elif token in [switchParser.ENDLINE]:
                     pass
                 else:
                     pass
-                self.state = 61
+                self.state = 59
                 self.match(switchParser.ENDLINE)
+                pass
+
+            elif la_ == 3:
+                self.state = 60
+                self.while_loop()
                 pass
 
 
@@ -522,31 +488,31 @@ class switchParser ( Parser ):
         self.enterRule(localctx, 10, self.RULE_expr)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 70
+            self.state = 69
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [switchParser.STRING, switchParser.INT, switchParser.FLOAT, switchParser.NAME]:
-                self.state = 64
+                self.state = 63
                 self.prim_expr()
                 pass
             elif token in [switchParser.CALL_OP]:
-                self.state = 65
+                self.state = 64
                 self.call()
                 pass
             elif token in [switchParser.MATH_OPS]:
-                self.state = 66
+                self.state = 65
                 self.math_op()
                 pass
             elif token in [switchParser.ASSIGNMENT_OP]:
-                self.state = 67
+                self.state = 66
                 self.assignment()
                 pass
             elif token in [switchParser.ACCESS_OP]:
-                self.state = 68
+                self.state = 67
                 self.access()
                 pass
             elif token in [switchParser.FUNCTION_DELIM]:
-                self.state = 69
+                self.state = 68
                 self.function()
                 pass
             else:
@@ -616,41 +582,41 @@ class switchParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 72
+            self.state = 71
             self.match(switchParser.FUNCTION_DELIM)
-            self.state = 81
+            self.state = 80
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==switchParser.NAME:
-                self.state = 73
+                self.state = 72
                 self.match(switchParser.NAME)
-                self.state = 78
+                self.state = 77
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 while _la==switchParser.ARG_DELIM:
-                    self.state = 74
+                    self.state = 73
                     self.match(switchParser.ARG_DELIM)
-                    self.state = 75
+                    self.state = 74
                     self.match(switchParser.NAME)
-                    self.state = 80
+                    self.state = 79
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
 
 
-            self.state = 83
+            self.state = 82
             self.match(switchParser.BLOCK_DELIM)
-            self.state = 87
+            self.state = 86
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << switchParser.STRING) | (1 << switchParser.ENDLINE) | (1 << switchParser.MATH_OPS) | (1 << switchParser.ASSIGNMENT_OP) | (1 << switchParser.ACCESS_OP) | (1 << switchParser.CALL_OP) | (1 << switchParser.WHILE_LOOP_DELIM) | (1 << switchParser.FUNCTION_DELIM) | (1 << switchParser.INT) | (1 << switchParser.FLOAT) | (1 << switchParser.NAME))) != 0):
-                self.state = 84
+                self.state = 83
                 self.line()
-                self.state = 89
+                self.state = 88
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 90
+            self.state = 89
             self.match(switchParser.FUNCTION_END)
         except RecognitionException as re:
             localctx.exception = re
@@ -705,21 +671,21 @@ class switchParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 92
+            self.state = 91
             self.match(switchParser.CALL_OP)
-            self.state = 93
+            self.state = 92
             self.expr()
-            self.state = 96
+            self.state = 95
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==switchParser.ARG_DELIM:
-                self.state = 94
+                self.state = 93
                 self.match(switchParser.ARG_DELIM)
-                self.state = 95
+                self.state = 94
                 self.args()
 
 
-            self.state = 98
+            self.state = 97
             self.match(switchParser.END_CALL)
         except RecognitionException as re:
             localctx.exception = re
@@ -766,11 +732,11 @@ class switchParser ( Parser ):
         self.enterRule(localctx, 16, self.RULE_math_op)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 100
+            self.state = 99
             self.match(switchParser.MATH_OPS)
-            self.state = 101
+            self.state = 100
             self.args()
-            self.state = 102
+            self.state = 101
             self.match(switchParser.END_CALL)
         except RecognitionException as re:
             localctx.exception = re
@@ -827,27 +793,27 @@ class switchParser ( Parser ):
         self.enterRule(localctx, 18, self.RULE_assignment)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 104
+            self.state = 103
             self.match(switchParser.ASSIGNMENT_OP)
-            self.state = 107
+            self.state = 106
             self._errHandler.sync(self)
             token = self._input.LA(1)
             if token in [switchParser.NAME]:
-                self.state = 105
+                self.state = 104
                 self.match(switchParser.NAME)
                 pass
             elif token in [switchParser.ACCESS_OP]:
-                self.state = 106
+                self.state = 105
                 self.access()
                 pass
             else:
                 raise NoViableAltException(self)
 
-            self.state = 109
+            self.state = 108
             self.match(switchParser.ARG_DELIM)
-            self.state = 110
+            self.state = 109
             self.expr()
-            self.state = 111
+            self.state = 110
             self.match(switchParser.END_CALL)
         except RecognitionException as re:
             localctx.exception = re
@@ -904,27 +870,27 @@ class switchParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 113
+            self.state = 112
             self.match(switchParser.ACCESS_OP)
+            self.state = 113
+            self.expr()
             self.state = 114
-            self.expr()
-            self.state = 115
             self.match(switchParser.ARG_DELIM)
-            self.state = 116
+            self.state = 115
             self.expr()
-            self.state = 121
+            self.state = 120
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==switchParser.ARG_DELIM:
-                self.state = 117
+                self.state = 116
                 self.match(switchParser.ARG_DELIM)
-                self.state = 118
+                self.state = 117
                 self.expr()
-                self.state = 123
+                self.state = 122
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 124
+            self.state = 123
             self.match(switchParser.END_CALL)
         except RecognitionException as re:
             localctx.exception = re
@@ -975,17 +941,17 @@ class switchParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 126
+            self.state = 125
             self.expr()
-            self.state = 131
+            self.state = 130
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==switchParser.ARG_DELIM:
-                self.state = 127
+                self.state = 126
                 self.match(switchParser.ARG_DELIM)
-                self.state = 128
+                self.state = 127
                 self.expr()
-                self.state = 133
+                self.state = 132
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -1037,7 +1003,7 @@ class switchParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 134
+            self.state = 133
             _la = self._input.LA(1)
             if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << switchParser.STRING) | (1 << switchParser.INT) | (1 << switchParser.FLOAT) | (1 << switchParser.NAME))) != 0)):
                 self._errHandler.recoverInline(self)
