@@ -1,0 +1,8 @@
+from Switch.switch_builtins import *
+namespace = Namespace()
+namespace.walrus(',', exec('''
+def __f(__arg0):
+ namespace.update({'.': '__arg0'})
+ print_no_nl(namespace['.'])
+''', ns_d := {key: isinstance(key, ModuleType) for key in globals()}) or ns_d['__f'])
+namespace[','](SwitchFrac(3))

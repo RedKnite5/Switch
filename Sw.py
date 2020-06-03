@@ -5,6 +5,9 @@
 import sys
 from itertools import takewhile
 
+
+from Switch.errors import *
+
 #from antlr4 import *
 from antlr4 import (ParseTreeWalker, InputStream, FileStream,
 	CommonTokenStream, ErrorNode, TerminalNode, tree)
@@ -16,13 +19,7 @@ from Switch.switchListener import switchListener
 from Switch.switchParser import switchParser
 
 
-__all__ = ["comp", "SwitchError"]
-
-
-class SwitchError(SyntaxError):
-	"""Syntax error in the Switch language"""
-
-	pass
+__all__ = ["comp"]
 
 
 class ExceptionListener(ErrorListener):
@@ -120,7 +117,7 @@ class SwitchPrintListener(switchListener):
 	def enterWhile_loop(self, ctx):
 		"""Indent while loops if they are inside other blocks"""
 
-		self.st[-1] +=  b"while "
+		self.st[-1] += b"while "
 
 	def enterWhile_test(self, ctx):
 		"""While loop tests must be handled seperatly from other statments
@@ -149,20 +146,29 @@ class SwitchPrintListener(switchListener):
 		self.st[-1] += b"\n"
 
 	def enterFunction(self, ctx):
+		"""Create function heading and add arguments to namespace"""
+
 		ctx.indent = self.indent
 		self.indent = 1
 		m = tuple(map(lambda a: a.getText(), ctx.getChildren()))
 		args = tuple(takewhile(lambda a: a != "B", m[1:]))
-		print(args)
 		self.st[-1] += (
 			b"exec('''\ndef __f("
 			+ b"".join(b"__arg%d" % i for i in range(len(args)))
 			+ b"):\n namespace.update("
-			+ str({key: "__arg%d" % i for i, key in enumerate(args)}).encode("utf-8")
+			+ (str({key: "__arg%d" % i for i, key in enumerate(args)})
+				.replace("': '", "': ")
+				.replace("', '", ", '")
+				.replace("'}", "}")
+				.encode("utf-8"))
 			+ b")\n")
 
 	def exitFunction(self, ctx):
-		self.st[-1] += b"''', ns_d := deepcopy({key: (val if not isinstance(val, ModuleType) else val.__dict__) for key, val in globals().items()})) or ns_d['__f']"
+		"""Finish function and return it"""
+
+		self.st[-1] += (b"''', ns_d := {key: (val.__dict__ "
+			b"if isinstance(val, ModuleType) else val) "
+			b"for key, val in globals().items()}) or ns_d['__f']")
 		self.indent = ctx.indent
 
 	def enterLine(self, ctx):
@@ -418,7 +424,7 @@ def main():
 
 	if minimal != "c":
 		try:
-			exec(output.decode())
+			exec(output.decode(), {})
 		except Exception:
 			print("Switch Excpetion: ")
 			raise

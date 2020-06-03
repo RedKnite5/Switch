@@ -9,12 +9,15 @@ from subprocess import run as run_pro
 
 from Switch.Sw import *
 from Switch.switch_builtins import *
+from Switch.errors import *
 
 old_stdout = sys.stdout
 old_stderr = sys.stderr
 
 
 def run(tester, source_code, output, file=False):
+	"""Test that the source_code produces the desired output"""
+
 	if file:
 		from pathlib import Path
 		source_code = Path(__file__).parent.absolute() / source_code

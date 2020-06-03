@@ -5,6 +5,8 @@ from copy import deepcopy
 from types import ModuleType
 import reprlib
 
+from Switch.errors import *
+
 
 __all__ = [
 	"deepcopy",
@@ -215,10 +217,8 @@ class SwitchMap(Namespace):
 	def __getitem__(self, item):
 		try:
 			return super().__getitem__(item)
-		except KeyError:
-			pass
-
-			raise
+		except KeyError as e:
+			raise SwitchKeyError(e.message)
 
 
 def print_no_nl(*args, **kwargs):
