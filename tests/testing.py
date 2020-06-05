@@ -22,7 +22,7 @@ def run(tester, source_code, output, file=False):
 		from pathlib import Path
 		source_code = Path(__file__).parent.absolute() / source_code
 	code = comp(source_code, file=file)
-	exec(code)
+	exec(code, {})
 	tester.assertEqual(sys.stdout.getvalue(), output)
 
 
@@ -498,10 +498,35 @@ class TestFunctionDefinition(unittest.TestCase):
 
 	def test_func_def(self):
 		run(self,
-			"""
-			F B c->n.l L f L
-			""",
+			"F B c->n.l L f L",
 			"")
+
+	def test_func(self):
+		run(self,
+			"c F B c->nZl Lf l",
+			"0")
+
+	def test_args(self):
+		run(self,
+			"c F . n * B c->n p.n* l l L f n O n OZ l",
+			"3")
+
+	def test_two_funcs(self):
+		run(self,
+			"""
+			e& n F B c->n SOZZZZZO l L f l L
+			e# n F @ B c->n @ l L f l L
+			c&l L
+			c#nOl L
+			""",
+			"A1")
+
+	def test_nested(self):
+		run(self,
+			"""
+			c F B c F . B c->n . l L f n OZZ l L f l
+			""",
+			"4")
 
 
 class TestFile(unittest.TestCase):

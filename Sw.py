@@ -4,6 +4,7 @@
 
 import sys
 from itertools import takewhile
+from pathlib import Path
 
 
 from Switch.errors import *
@@ -103,7 +104,10 @@ class SwitchPrintListener(switchListener):
 	def __init__(self, output, namespace):
 		self.st = [output]
 		self.out = output
-		self.namespace = namespace
+		self.builtins = namespace
+		self.ns_name = b"namespace"
+		self.namespaces = {self.ns_name: self.builtins.copy()}
+		self.namespace = self.namespaces[self.ns_name]
 		self.indent = 0
 
 	def enterSwitch_file(self, ctx):
@@ -111,7 +115,7 @@ class SwitchPrintListener(switchListener):
 
 		self.st[-1] += (
 			b"from Switch.switch_builtins import *\n"
-			b"namespace = Namespace()\n"
+			+ self.ns_name + b" = Namespace()\n"
 		)
 
 	def enterWhile_loop(self, ctx):
@@ -151,25 +155,37 @@ class SwitchPrintListener(switchListener):
 		ctx.indent = self.indent
 		self.indent = 1
 		m = tuple(map(lambda a: a.getText(), ctx.getChildren()))
-		args = tuple(takewhile(lambda a: a != "B", m[1:]))
+		args = [i for i in takewhile(lambda a: a != "B", m[1:]) if i != 'n']
+		ctx.func_name = b"_f" + str(id(ctx)).encode("utf8")
+		fn = ctx.func_name
+
 		self.st[-1] += (
-			b"exec('''\ndef __f("
-			+ b"".join(b"__arg%d" % i for i in range(len(args)))
-			+ b"):\n namespace.update("
-			+ (str({key: "__arg%d" % i for i, key in enumerate(args)})
-				.replace("': '", "': ")
+			b"exec('''\ndef " + fn + b"("
+			+ b", ".join(fn + b"_arg%d" % i for i in range(len(args)))
+			+ b"):\n"
+			+ b" " + fn + b"_ns = deepcopy(" + self.ns_name + b")\n"
+			+ b" " + fn + b"_ns.update("
+			+ (str({key: fn + b"_arg%d" % i for i, key in enumerate(args)})
+				.replace("': b'", "': ")
 				.replace("', '", ", '")
 				.replace("'}", "}")
-				.encode("utf-8"))
+				.encode("utf8"))
 			+ b")\n")
+		
+		ctx.old_ns_name = self.ns_name
+		self.ns_name = fn + b"_ns"
+		self.namespaces[self.ns_name] = self.builtins.copy()
+		self.namespace = self.namespaces[self.ns_name]
 
 	def exitFunction(self, ctx):
 		"""Finish function and return it"""
 
 		self.st[-1] += (b"''', ns_d := {key: (val.__dict__ "
 			b"if isinstance(val, ModuleType) else val) "
-			b"for key, val in globals().items()}) or ns_d['__f']")
+			b"for key, val in globals().items()}) or ns_d['" + ctx.func_name + b"']")
 		self.indent = ctx.indent
+		self.ns_name = ctx.old_ns_name
+		self.namespace = self.namespaces[self.ns_name]
 
 	def enterLine(self, ctx):
 		"""Indent normal lines as well as while loops"""
@@ -192,7 +208,7 @@ class SwitchPrintListener(switchListener):
 
 		if ctx.INT() is not None:
 			num = int(ctx.INT().getText().translate(table), 2)
-			self.st[-1] += bytes(f"SwitchFrac({num})", "utf-8")
+			self.st[-1] += bytes(f"SwitchFrac({num})", "utf8")
 
 		elif ctx.FLOAT() is not None:
 			integer, decimal = ctx.FLOAT().getText().translate(table).split("d")
@@ -202,23 +218,24 @@ class SwitchPrintListener(switchListener):
 			for index, digit in enumerate(decimal):
 				dec_part += float(digit) / 2 ** (index + 1)
 
-			self.st[-1] += bytes(f"SwitchFrac({int_part + dec_part})", "utf-8")
+			self.st[-1] += bytes(f"SwitchFrac({int_part + dec_part})", "utf8")
 
 		elif ctx.NAME() is not None:
 			try:
-				self.st[-1] += bytes(self.namespace[ctx.getText()], "utf-8")
+				self.st[-1] += bytes(self.namespace[ctx.getText()], "utf8")
 			except KeyError:
 				self.st[-1] += bytes(
-					"namespace["
+					self.ns_name.decode("utf8")
+					+ "["
 					+ repr(ctx.getText())
 					+ "]",
-					"utf-8")
+					"utf8")
 
 		elif ctx.STRING() is not None:
 			nums = ctx.STRING().getText()[1:].split("s")
 			nums = [int(x.translate(table), 2) for x in nums]
 			chars = [chr(x) for x in nums]
-			self.st[-1] += bytes(f"'{''.join(chars)}'", "utf-8")
+			self.st[-1] += bytes(f"'{''.join(chars)}'", "utf8")
 
 	def enterCall(self, ctx):
 		"""Start keeping track of how many children have passed"""
@@ -253,7 +270,7 @@ class SwitchPrintListener(switchListener):
 
 		self.st[-1] += bytes(
 			ops[ctx.children[0].getText()],
-			"utf-8"
+			"utf8"
 		) + b"("
 
 	def exitMath_op(self, ctx):
@@ -301,8 +318,9 @@ class SwitchPrintListener(switchListener):
 		if ctx.NAME():
 			val = self.st.pop()
 			py_assign = (
-				b"namespace.walrus("
-				+ bytes(repr(ctx.NAME().getText()), "utf-8")
+				self.ns_name
+				+ b".walrus("
+				+ bytes(repr(ctx.NAME().getText()), "utf8")
 				+ b", "
 				+ val
 				+ b")"
@@ -365,7 +383,7 @@ def comp(source, file=False):
 	"""Parse the Switch source code and walk it, then return the python
 	code"""
 
-	output = bytearray("", "utf-8")
+	output = bytearray("", "utf8")
 
 	namespace = {
 		"->": "print_no_nl",
@@ -417,17 +435,21 @@ def main():
 		print("Output:")
 
 	if minimal != "m":
-		print(output.decode())
+		print(repr(output.decode()))
 
 	if not minimal:
 		print("\nRun:")
 
 	if minimal != "c":
 		try:
-			exec(output.decode(), {})
-		except Exception:
-			print("Switch Excpetion: ")
-			raise
+			if "-p" in sys.argv:
+				exec(output.decode(), {})
+			else:
+				with open(Path(__file__).parent.absolute() / "out.py", "w+") as file:
+					file.write(output.decode())
+				import Switch.out
+		except Exception as e:
+			raise SwitchError(e)
 
 
 if __name__ == '__main__':
