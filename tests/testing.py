@@ -735,14 +735,14 @@ class TestCLI(unittest.TestCase):
 		from pathlib import Path
 
 	def test_main(self):
-		out = run_pro("python -m Switch.Sw c->nOl", capture_output=True, encoding="utf-8")
+		out = run_pro("python -m Switch.switch c->nOl", capture_output=True, encoding="utf-8")
 		self.assertEqual(out.returncode, 0)
 		self.assertTrue(out.stdout.startswith("Output:\n"))
 
 	def test_main_f(self):
 		file = Path(__file__).parent.absolute() / "hello_world.sw"
 		out = run_pro(
-			f"python -m Switch.Sw -f {file}",
+			f"python -m Switch.switch -f {file}",
 			capture_output=True,
 			encoding="utf-8"
 		)
@@ -751,7 +751,7 @@ class TestCLI(unittest.TestCase):
 
 	def test_main_m(self):
 		out = run_pro(
-			"python -m Switch.Sw c->nOl -m",
+			"python -m Switch.switch c->nOl -m",
 			capture_output=True,
 			encoding="utf-8"
 		)
@@ -761,7 +761,7 @@ class TestCLI(unittest.TestCase):
 	def test_main_m_f(self):
 		file = Path(__file__).parent.absolute() / "hello_world.sw"
 		out = run_pro(
-			f"python -m Switch.Sw -f {file} -m",
+			f"python -m Switch.switch -f {file} -m",
 			capture_output=True,
 			encoding="utf-8"
 		)
@@ -770,7 +770,7 @@ class TestCLI(unittest.TestCase):
 
 	def test_main_c(self):
 		out = run_pro(
-			"python -m Switch.Sw c->nOl -c",
+			"python -m Switch.switch c->nOl -c",
 			capture_output=True,
 			encoding="utf-8"
 		)
@@ -780,7 +780,7 @@ class TestCLI(unittest.TestCase):
 	def test_main_c_f(self):
 		file = Path(__file__).parent.absolute() / "hello_world.sw"
 		out = run_pro(
-			f"python -m Switch.Sw -f {file} -c",
+			f"python -m Switch.switch -f {file} -c",
 			capture_output=True,
 			encoding="utf-8"
 		)
@@ -789,7 +789,7 @@ class TestCLI(unittest.TestCase):
 
 	def test_main_m_overrides_c(self):
 		out = run_pro(
-			"python -m Switch.Sw c->nOl -c -m",
+			"python -m Switch.switch c->nOl -c -m",
 			capture_output=True,
 			encoding="utf-8"
 		)

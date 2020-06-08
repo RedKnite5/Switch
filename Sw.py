@@ -2,9 +2,7 @@
 
 """The main process of the Switch language"""
 
-import sys
 from itertools import takewhile
-from pathlib import Path
 
 
 from Switch.errors import *
@@ -105,10 +103,11 @@ class SwitchPrintListener(switchListener):
 		self.st = [output]
 		self.out = output
 		self.builtins = namespace
-		self.ns_name = b"namespace"
+		self.ns_name = b"main_ns"
 		self.namespaces = {self.ns_name: self.builtins.copy()}
 		self.namespace = self.namespaces[self.ns_name]
 		self.indent = 0
+		self.func_count = 0
 
 	def enterSwitch_file(self, ctx):
 		"""Add initial setup commands for the Switch language"""
@@ -156,15 +155,26 @@ class SwitchPrintListener(switchListener):
 		self.indent = 1
 		m = tuple(map(lambda a: a.getText(), ctx.getChildren()))
 		args = [i for i in takewhile(lambda a: a != "B", m[1:]) if i != 'n']
-		ctx.func_name = b"_f" + str(id(ctx)).encode("utf8")
+		ctx.func_name = b"_f" + str(self.func_count).encode("utf8")
+		self.func_count += 1
 		fn = ctx.func_name
 
+		quotes = b"'''" if self.ns_name == b"main_ns" else b"\\'\\'\\'"
+
 		self.st[-1] += (
-			b"exec('''\ndef " + fn + b"("
+			b"exec("
+			+ quotes
+			+ b"\ndef "
+			+ fn
+			+ b"("
 			+ b", ".join(fn + b"_arg%d" % i for i in range(len(args)))
 			+ b"):\n"
-			+ b" " + fn + b"_ns = deepcopy(" + self.ns_name + b")\n"
-			+ b" " + fn + b"_ns.update("
+			+ b" "
+			+ fn
+			+ b"_ns = deepcopy(" + self.ns_name + b")\n"
+			+ b" "
+			+ fn
+			+ b"_ns.update("
 			+ (str({key: fn + b"_arg%d" % i for i, key in enumerate(args)})
 				.replace("': b'", "': ")
 				.replace("', '", ", '")
@@ -180,12 +190,16 @@ class SwitchPrintListener(switchListener):
 	def exitFunction(self, ctx):
 		"""Finish function and return it"""
 
-		self.st[-1] += (b"''', ns_d := {key: (val.__dict__ "
-			b"if isinstance(val, ModuleType) else val) "
-			b"for key, val in globals().items()}) or ns_d['" + ctx.func_name + b"']")
 		self.indent = ctx.indent
 		self.ns_name = ctx.old_ns_name
 		self.namespace = self.namespaces[self.ns_name]
+
+		quotes = b"'''" if self.ns_name == b"main_ns" else b"\\'\\'\\'"
+
+		self.st[-1] += (quotes + b", ns_d := {key: (val.__dict__ "
+			b"if isinstance(val, ModuleType) else val) "
+			b"for key, val in globals().items()}) or ns_d['" + ctx.func_name + b"']")
+
 
 	def enterLine(self, ctx):
 		"""Indent normal lines as well as while loops"""
@@ -413,44 +427,15 @@ def comp(source, file=False):
 	return output
 
 
-def main():
-	"""Determine what the program should take input and what output is
-	wanted"""
-
-	try:
-		assert sys.argv[1] == "-f"
-		output = comp(sys.argv[2], True)
-	except AssertionError:
-		output = comp(sys.argv[1])
-	except IndexError:
-		pass
-
-	minimal = None
-	if "-m" in sys.argv:
-		minimal = "m"
-	elif "-c" in sys.argv:
-		minimal = "c"
-
-	if not minimal:
-		print("Output:")
-
-	if minimal != "m":
-		print(repr(output.decode()))
-
-	if not minimal:
-		print("\nRun:")
-
-	if minimal != "c":
-		try:
-			if "-p" in sys.argv:
-				exec(output.decode(), {})
-			else:
-				with open(Path(__file__).parent.absolute() / "out.py", "w+") as file:
-					file.write(output.decode())
-				import Switch.out
-		except Exception as e:
-			raise SwitchError(e)
-
-
 if __name__ == '__main__':
-	main()
+	import unittest
+	import sys
+	import Switch.tests.testing as testing
+
+	v = 1
+	if "-v" in sys.argv:
+		v = 3
+
+	suite = unittest.TestLoader().loadTestsFromModule(testing)
+
+	unittest.TextTestRunner(verbosity=v).run(suite)

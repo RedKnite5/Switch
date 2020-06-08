@@ -5,3 +5,5 @@ htmlcov
 .vscode
 switch.code-workspace
 .antlr
+out.py
+tests/out.py
