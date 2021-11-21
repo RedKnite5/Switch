@@ -1,5 +1,12 @@
+#!/mnt/c/Users/RedKnite/Appdata/local/programs/Python/Python39/python.exe
+
 import sys
 from pathlib import Path
+
+script_path = "C:\\Users\\RedKnite\\Documents\\Python"
+
+if script_path not in sys.path:
+    sys.path.insert(0, script_path)
 
 from Switch.Sw import *
 from Switch.errors import *
@@ -43,4 +50,4 @@ def main():
 			raise SwitchError(e)
 
 if __name__ == "__main__":
-    main()
+	main()

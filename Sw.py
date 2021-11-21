@@ -1,4 +1,4 @@
-#!/mnt/c/Users/RedKnite/Appdata/local/programs/Python/Python38/python.exe
+#!/mnt/c/Users/RedKnite/Appdata/local/programs/Python/Python39/python.exe
 
 """The main process of the Switch language"""
 
