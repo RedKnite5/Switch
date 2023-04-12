@@ -1,3 +1,3 @@
 from Switch.switch_builtins import *
 main_ns = Namespace()
-SwitchFrac(1)
+print_no_nl(SwitchFrac(1))

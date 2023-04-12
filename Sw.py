@@ -1,4 +1,4 @@
-#!/mnt/c/Users/RedKnite/Appdata/local/programs/Python/Python39/python.exe
+#!/usr/bin/env python3
 
 """The main process of the Switch language"""
 
@@ -7,7 +7,6 @@ from itertools import takewhile
 
 from Switch.errors import *
 
-#from antlr4 import *
 from antlr4 import (ParseTreeWalker, InputStream, FileStream,
 	CommonTokenStream, ErrorNode, TerminalNode, tree)
 
@@ -198,7 +197,7 @@ class SwitchPrintListener(switchListener):
 
 		self.st[-1] += (quotes + b", ns_d := {key: (val.__dict__ "
 			b"if isinstance(val, ModuleType) else val) "
-			b"for key, val in globals().items()}) or ns_d['" + ctx.func_name + b"']")
+			b"for key, val in {**globals(), **locals()}.items()}) or ns_d['" + ctx.func_name + b"']")
 
 
 	def enterLine(self, ctx):

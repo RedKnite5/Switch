@@ -1,4 +1,4 @@
-
+import inspect
 from functools import reduce
 from fractions import Fraction
 from copy import deepcopy
@@ -24,7 +24,23 @@ __all__ = [
 	"less_than",
 	"greater_than",
 	"equal",
+	"nonlocals"
 ]
+
+
+def nonlocals():
+	caller = inspect.currentframe().f_back
+	return {k: v for k, v in caller.f_locals.items() if k in caller.f_code.co_freevars}
+
+#def nonlocals():
+#    stack = inspect.stack()
+#    if len(stack) < 3: return {}
+#    f = stack[2][0]
+#    res = {}
+#    while f.f_back:
+#        res.update({k:v for k,v in f.f_locals.items() if k not in res})
+#        f = f.f_back
+#    return res
 
 
 def return_same_class(cls):

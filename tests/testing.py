@@ -735,14 +735,14 @@ class TestCLI(unittest.TestCase):
 		from pathlib import Path
 
 	def test_main(self):
-		out = run_pro("python -m Switch.switch c->nOl", capture_output=True, encoding="utf-8")
+		out = run_pro(["python", "-m", "Switch.switch", "c->nOl"], capture_output=True, encoding="utf-8")
 		self.assertEqual(out.returncode, 0)
 		self.assertTrue(out.stdout.startswith("Output:\n"))
 
 	def test_main_f(self):
 		file = Path(__file__).parent.absolute() / "hello_world.sw"
 		out = run_pro(
-			f"python -m Switch.switch -f {file}",
+			["python", "-m", "Switch.switch", "-f", str(file)],
 			capture_output=True,
 			encoding="utf-8"
 		)
@@ -751,17 +751,19 @@ class TestCLI(unittest.TestCase):
 
 	def test_main_m(self):
 		out = run_pro(
-			"python -m Switch.switch c->nOl -m",
+			["python", "-m", "Switch.switch", "c->nOl", "-m"],
 			capture_output=True,
 			encoding="utf-8"
 		)
+		if out.returncode != 0:
+			print(out.stderr)
 		self.assertEqual(out.returncode, 0)
 		self.assertEqual(out.stdout, "1")
 
 	def test_main_m_f(self):
 		file = Path(__file__).parent.absolute() / "hello_world.sw"
 		out = run_pro(
-			f"python -m Switch.switch -f {file} -m",
+			["python", "-m", "Switch.switch", "-f", str(file), "-m"],
 			capture_output=True,
 			encoding="utf-8"
 		)
@@ -770,7 +772,7 @@ class TestCLI(unittest.TestCase):
 
 	def test_main_c(self):
 		out = run_pro(
-			"python -m Switch.switch c->nOl -c",
+			["python", "-m", "Switch.switch", "c->nOl", "-c"],
 			capture_output=True,
 			encoding="utf-8"
 		)
@@ -780,7 +782,7 @@ class TestCLI(unittest.TestCase):
 	def test_main_c_f(self):
 		file = Path(__file__).parent.absolute() / "hello_world.sw"
 		out = run_pro(
-			f"python -m Switch.switch -f {file} -c",
+			["python", "-m", "Switch.switch", "-f", str(file), "-c"],
 			capture_output=True,
 			encoding="utf-8"
 		)
@@ -789,7 +791,7 @@ class TestCLI(unittest.TestCase):
 
 	def test_main_m_overrides_c(self):
 		out = run_pro(
-			"python -m Switch.switch c->nOl -c -m",
+			["python", "-m", "Switch.switch", "c->nOl", "-c", "-m"],
 			capture_output=True,
 			encoding="utf-8"
 		)

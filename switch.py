@@ -1,4 +1,4 @@
-#!/mnt/c/Users/RedKnite/Appdata/local/programs/Python/Python39/python.exe
+#!/usr/bin/env python3
 
 import sys
 from pathlib import Path
