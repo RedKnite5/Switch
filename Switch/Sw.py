@@ -4,9 +4,6 @@
 
 from itertools import takewhile
 
-
-from Switch.errors import *
-
 from antlr4 import (ParseTreeWalker, InputStream, FileStream,
 	CommonTokenStream, ErrorNode, TerminalNode, tree)
 
@@ -16,6 +13,7 @@ from Switch.switchLexer import switchLexer
 from Switch.switchListener import switchListener
 from Switch.switchParser import switchParser
 
+from Switch.errors import *
 
 __all__ = ["comp"]
 
@@ -64,20 +62,20 @@ class ExceptionListener(ErrorListener):
 class MyWalker(ParseTreeWalker):
 	"""Support the next_child function"""
 
-	def walk(self, listener, node):
-		if isinstance(node, ErrorNode):
-			listener.visitErrorNode(node)
+	def walk(self, listener, t):
+		if isinstance(t, ErrorNode):
+			listener.visitErrorNode(t)
 			return
-		if isinstance(node, TerminalNode):
-			listener.visitTerminal(node)
+		if isinstance(t, TerminalNode):
+			listener.visitTerminal(t)
 			return
-		self.enterRule(listener, node)
-		for child in node.getChildren():
-			self.next_child_rule(listener, node, child)
+		self.enterRule(listener, t)
+		for child in t.getChildren():
+			self.next_child_rule(listener, t, child)
 			self.walk(listener, child)
-		self.exitRule(listener, node)
+		self.exitRule(listener, t)
 
-	def next_child_rule(self, listener, r, child):
+	def next_child_rule(self, listener, rule, child):
 		"""A function that gets called whenever one of the listed classes
 		moves to the next child while walking"""
 
@@ -90,7 +88,7 @@ class MyWalker(ParseTreeWalker):
 			switchParser.AccessContext: listener.next_child_access,
 			switchParser.AssignmentContext: listener.next_child_assignment,
 		}
-		ctx = r.getRuleContext()
+		ctx = rule.getRuleContext()
 		call_map.get(type(ctx), lambda a, b: None)(ctx, child)
 
 
@@ -180,7 +178,7 @@ class SwitchPrintListener(switchListener):
 				.replace("'}", "}")
 				.encode("utf8"))
 			+ b")\n")
-		
+
 		ctx.old_ns_name = self.ns_name
 		self.ns_name = fn + b"_ns"
 		self.namespaces[self.ns_name] = self.builtins.copy()
@@ -431,10 +429,10 @@ if __name__ == '__main__':
 	import sys
 	import Switch.tests.testing as testing
 
-	v = 1
+	verbosity = 1
 	if "-v" in sys.argv:
-		v = 3
+		verbosity = 3
 
 	suite = unittest.TestLoader().loadTestsFromModule(testing)
 
-	unittest.TextTestRunner(verbosity=v).run(suite)
+	unittest.TextTestRunner(verbosity=verbosity).run(suite)

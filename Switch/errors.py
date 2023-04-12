@@ -1,3 +1,4 @@
+"""Error Types"""
 
 
 class SwitchError(SyntaxError):

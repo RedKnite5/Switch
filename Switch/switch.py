@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 
+"""Command line interface of Switch"""
+
 import sys
 from pathlib import Path
-
-script_path = "C:\\Users\\RedKnite\\Documents\\Python"
-
-if script_path not in sys.path:
-    sys.path.insert(0, script_path)
 
 from Switch.Sw import *
 from Switch.errors import *
@@ -46,8 +43,8 @@ def main():
 				with open(Path(__file__).parent.absolute() / "out.py", "w+") as file:
 					file.write(output.decode())
 				import Switch.out
-		except Exception as e:
-			raise SwitchError(e)
+		except Exception as exc:
+			raise SwitchError(exc) from exc
 
 if __name__ == "__main__":
 	main()
