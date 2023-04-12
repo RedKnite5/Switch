@@ -1,14 +1,9 @@
-#!/mnt/c/Users/RedKnite/Appdata/local/programs/Python/Python38/python.exe
+#!/usr/bin/env python3
 
 """The main process of the Switch language"""
 
-import sys
 from itertools import takewhile
 
-
-from Switch.errors import *
-
-#from antlr4 import *
 from antlr4 import (ParseTreeWalker, InputStream, FileStream,
 	CommonTokenStream, ErrorNode, TerminalNode, tree)
 
@@ -18,6 +13,7 @@ from Switch.switchLexer import switchLexer
 from Switch.switchListener import switchListener
 from Switch.switchParser import switchParser
 
+from Switch.errors import *
 
 __all__ = ["comp"]
 
@@ -66,20 +62,20 @@ class ExceptionListener(ErrorListener):
 class MyWalker(ParseTreeWalker):
 	"""Support the next_child function"""
 
-	def walk(self, listener, node):
-		if isinstance(node, ErrorNode):
-			listener.visitErrorNode(node)
+	def walk(self, listener, t):
+		if isinstance(t, ErrorNode):
+			listener.visitErrorNode(t)
 			return
-		if isinstance(node, TerminalNode):
-			listener.visitTerminal(node)
+		if isinstance(t, TerminalNode):
+			listener.visitTerminal(t)
 			return
-		self.enterRule(listener, node)
-		for child in node.getChildren():
-			self.next_child_rule(listener, node, child)
+		self.enterRule(listener, t)
+		for child in t.getChildren():
+			self.next_child_rule(listener, t, child)
 			self.walk(listener, child)
-		self.exitRule(listener, node)
+		self.exitRule(listener, t)
 
-	def next_child_rule(self, listener, r, child):
+	def next_child_rule(self, listener, rule, child):
 		"""A function that gets called whenever one of the listed classes
 		moves to the next child while walking"""
 
@@ -92,7 +88,7 @@ class MyWalker(ParseTreeWalker):
 			switchParser.AccessContext: listener.next_child_access,
 			switchParser.AssignmentContext: listener.next_child_assignment,
 		}
-		ctx = r.getRuleContext()
+		ctx = rule.getRuleContext()
 		call_map.get(type(ctx), lambda a, b: None)(ctx, child)
 
 
@@ -103,15 +99,19 @@ class SwitchPrintListener(switchListener):
 	def __init__(self, output, namespace):
 		self.st = [output]
 		self.out = output
-		self.namespace = namespace
+		self.builtins = namespace
+		self.ns_name = b"main_ns"
+		self.namespaces = {self.ns_name: self.builtins.copy()}
+		self.namespace = self.namespaces[self.ns_name]
 		self.indent = 0
+		self.func_count = 0
 
 	def enterSwitch_file(self, ctx):
 		"""Add initial setup commands for the Switch language"""
 
 		self.st[-1] += (
 			b"from Switch.switch_builtins import *\n"
-			b"namespace = Namespace()\n"
+			+ self.ns_name + b" = Namespace()\n"
 		)
 
 	def enterWhile_loop(self, ctx):
@@ -151,25 +151,52 @@ class SwitchPrintListener(switchListener):
 		ctx.indent = self.indent
 		self.indent = 1
 		m = tuple(map(lambda a: a.getText(), ctx.getChildren()))
-		args = tuple(takewhile(lambda a: a != "B", m[1:]))
+		args = [i for i in takewhile(lambda a: a != "B", m[1:]) if i != 'n']
+		ctx.func_name = b"_f" + str(self.func_count).encode("utf8")
+		self.func_count += 1
+		fn = ctx.func_name
+
+		quotes = b"'''" if self.ns_name == b"main_ns" else b"\\'\\'\\'"
+
 		self.st[-1] += (
-			b"exec('''\ndef __f("
-			+ b"".join(b"__arg%d" % i for i in range(len(args)))
-			+ b"):\n namespace.update("
-			+ (str({key: "__arg%d" % i for i, key in enumerate(args)})
-				.replace("': '", "': ")
+			b"exec("
+			+ quotes
+			+ b"\ndef "
+			+ fn
+			+ b"("
+			+ b", ".join(fn + b"_arg%d" % i for i in range(len(args)))
+			+ b"):\n"
+			+ b" "
+			+ fn
+			+ b"_ns = deepcopy(" + self.ns_name + b")\n"
+			+ b" "
+			+ fn
+			+ b"_ns.update("
+			+ (str({key: fn + b"_arg%d" % i for i, key in enumerate(args)})
+				.replace("': b'", "': ")
 				.replace("', '", ", '")
 				.replace("'}", "}")
-				.encode("utf-8"))
+				.encode("utf8"))
 			+ b")\n")
+
+		ctx.old_ns_name = self.ns_name
+		self.ns_name = fn + b"_ns"
+		self.namespaces[self.ns_name] = self.builtins.copy()
+		self.namespace = self.namespaces[self.ns_name]
 
 	def exitFunction(self, ctx):
 		"""Finish function and return it"""
 
-		self.st[-1] += (b"''', ns_d := {key: (val.__dict__ "
-			b"if isinstance(val, ModuleType) else val) "
-			b"for key, val in globals().items()}) or ns_d['__f']")
 		self.indent = ctx.indent
+		self.ns_name = ctx.old_ns_name
+		self.namespace = self.namespaces[self.ns_name]
+
+		quotes = b"'''" if self.ns_name == b"main_ns" else b"\\'\\'\\'"
+
+		self.st[-1] += (quotes + b", ns_d := {key: (val.__dict__ "
+			b"if isinstance(val, ModuleType) else val) "
+			b"for key, val in {**globals(), **locals()}.items()}) or ns_d['" + ctx.func_name + b"']")
+
 
 	def enterLine(self, ctx):
 		"""Indent normal lines as well as while loops"""
@@ -192,7 +219,7 @@ class SwitchPrintListener(switchListener):
 
 		if ctx.INT() is not None:
 			num = int(ctx.INT().getText().translate(table), 2)
-			self.st[-1] += bytes(f"SwitchFrac({num})", "utf-8")
+			self.st[-1] += bytes(f"SwitchFrac({num})", "utf8")
 
 		elif ctx.FLOAT() is not None:
 			integer, decimal = ctx.FLOAT().getText().translate(table).split("d")
@@ -202,23 +229,24 @@ class SwitchPrintListener(switchListener):
 			for index, digit in enumerate(decimal):
 				dec_part += float(digit) / 2 ** (index + 1)
 
-			self.st[-1] += bytes(f"SwitchFrac({int_part + dec_part})", "utf-8")
+			self.st[-1] += bytes(f"SwitchFrac({int_part + dec_part})", "utf8")
 
 		elif ctx.NAME() is not None:
 			try:
-				self.st[-1] += bytes(self.namespace[ctx.getText()], "utf-8")
+				self.st[-1] += bytes(self.namespace[ctx.getText()], "utf8")
 			except KeyError:
 				self.st[-1] += bytes(
-					"namespace["
+					self.ns_name.decode("utf8")
+					+ "["
 					+ repr(ctx.getText())
 					+ "]",
-					"utf-8")
+					"utf8")
 
 		elif ctx.STRING() is not None:
 			nums = ctx.STRING().getText()[1:].split("s")
 			nums = [int(x.translate(table), 2) for x in nums]
 			chars = [chr(x) for x in nums]
-			self.st[-1] += bytes(f"'{''.join(chars)}'", "utf-8")
+			self.st[-1] += bytes(f"'{''.join(chars)}'", "utf8")
 
 	def enterCall(self, ctx):
 		"""Start keeping track of how many children have passed"""
@@ -253,7 +281,7 @@ class SwitchPrintListener(switchListener):
 
 		self.st[-1] += bytes(
 			ops[ctx.children[0].getText()],
-			"utf-8"
+			"utf8"
 		) + b"("
 
 	def exitMath_op(self, ctx):
@@ -301,8 +329,9 @@ class SwitchPrintListener(switchListener):
 		if ctx.NAME():
 			val = self.st.pop()
 			py_assign = (
-				b"namespace.walrus("
-				+ bytes(repr(ctx.NAME().getText()), "utf-8")
+				self.ns_name
+				+ b".walrus("
+				+ bytes(repr(ctx.NAME().getText()), "utf8")
 				+ b", "
 				+ val
 				+ b")"
@@ -365,7 +394,7 @@ def comp(source, file=False):
 	"""Parse the Switch source code and walk it, then return the python
 	code"""
 
-	output = bytearray("", "utf-8")
+	output = bytearray("", "utf8")
 
 	namespace = {
 		"->": "print_no_nl",
@@ -395,40 +424,15 @@ def comp(source, file=False):
 	return output
 
 
-def main():
-	"""Determine what the program should take input and what output is
-	wanted"""
-
-	try:
-		assert sys.argv[1] == "-f"
-		output = comp(sys.argv[2], True)
-	except AssertionError:
-		output = comp(sys.argv[1])
-	except IndexError:
-		pass
-
-	minimal = None
-	if "-m" in sys.argv:
-		minimal = "m"
-	elif "-c" in sys.argv:
-		minimal = "c"
-
-	if not minimal:
-		print("Output:")
-
-	if minimal != "m":
-		print(output.decode())
-
-	if not minimal:
-		print("\nRun:")
-
-	if minimal != "c":
-		try:
-			exec(output.decode(), {})
-		except Exception:
-			print("Switch Excpetion: ")
-			raise
-
-
 if __name__ == '__main__':
-	main()
+	import unittest
+	import sys
+	import Switch.tests.testing as testing
+
+	verbosity = 1
+	if "-v" in sys.argv:
+		verbosity = 3
+
+	suite = unittest.TestLoader().loadTestsFromModule(testing)
+
+	unittest.TextTestRunner(verbosity=verbosity).run(suite)

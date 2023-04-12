@@ -1,3 +1,6 @@
+"""
+Functions used in Python code generated the Switch
+"""
 
 from functools import reduce
 from fractions import Fraction
@@ -104,10 +107,9 @@ class SwitchFracBase(Fraction):
 		else:
 			return str(self.numerator / self.denominator)
 
-	# I forget what raised an error when this wasn't there
-	# I should figure it out so I know if it is safe to deleter
-	# Don't delete before then. Its not hurting anything :)
 	def is_integer(self):
+		"""Check if SwitchFraction is an integer"""
+
 		return self.denominator == 1
 
 
@@ -169,7 +171,7 @@ class SwitchList(Namespace):
 			if item == "len":
 				return len(self)
 			if item == "add":
-				return lambda a: self._append(a)
+				return self._append
 			if item == "pop":
 				self._length -= 1
 				return lambda: self.pop(len(self))
@@ -184,11 +186,13 @@ class SwitchList(Namespace):
 
 	@reprlib.recursive_repr("[...]")
 	def __repr__(self):
-		s = []
+		elements = []
+		# can't iterate over directly because self is a dict and we
+		# need to iterate over the keys in the correct order
 		for i in range(len(self)):
-			s.append(repr(self[i]))
+			elements.append(repr(self[i]))
 
-		return f"[{','.join(s)}]"
+		return "[{}]".format(','.join(elements))
 
 
 class SwitchMap(Namespace):
@@ -197,19 +201,19 @@ class SwitchMap(Namespace):
 	def __init__(self, *args):
 		super().__init__()
 
-		it = iter(args)
-		for x in it:
+		iterator = iter(args)
+		for key in iterator:
 			try:
-				self.update({x: next(it)})
+				self.update({key: next(iterator)})
 			except StopIteration:
 				raise ValueError("Must have an even number of items")
 
 	@reprlib.recursive_repr("{...}")
 	def __repr__(self):
-		s = []
+		elements = []
 		for key, val in self.items():
-			s.append(f"{repr(key)}:{repr(val)}")
-		return f"{{{','.join(s)}}}"
+			elements.append(f"{repr(key)}:{repr(val)}")
+		return "{%s}" % ','.join(elements)
 
 	def keys(self, *args, **kwargs):
 		return SwitchList(super().keys(*args, **kwargs))
@@ -217,8 +221,9 @@ class SwitchMap(Namespace):
 	def __getitem__(self, item):
 		try:
 			return super().__getitem__(item)
-		except KeyError as e:
-			raise SwitchKeyError(e.message)
+		except KeyError as exception:
+			message = getattr(exception, "message", "")
+			raise SwitchKeyError(message) from exception
 
 
 def print_no_nl(*args, **kwargs):
@@ -277,4 +282,3 @@ def equal(*args):
 		if not args[0] == i:
 			return False
 	return True
-
