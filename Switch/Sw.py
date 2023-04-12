@@ -390,7 +390,7 @@ class SwitchPrintListener(switchListener):
 			pass
 
 
-def comp(source, file=False):
+def comp(source: str, file: bool=False) -> bytearray:
 	"""Parse the Switch source code and walk it, then return the python
 	code"""
 
@@ -429,10 +429,10 @@ if __name__ == '__main__':
 	import sys
 	import Switch.tests.testing as testing
 
-	verbosity = 1
+	VERBOSITY = 1
 	if "-v" in sys.argv:
-		verbosity = 3
+		VERBOSITY = 3
 
 	suite = unittest.TestLoader().loadTestsFromModule(testing)
 
-	unittest.TextTestRunner(verbosity=verbosity).run(suite)
+	unittest.TextTestRunner(verbosity=VERBOSITY).run(suite)

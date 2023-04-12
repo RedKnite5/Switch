@@ -7,6 +7,7 @@ from fractions import Fraction
 from copy import deepcopy
 from types import ModuleType
 import reprlib
+import operator as op
 
 from Switch.errors import *
 
@@ -237,27 +238,27 @@ def print_no_nl(*args, **kwargs):
 def add(*args):
 	"""Add all the arguments"""
 
-	return reduce(lambda a, b: a + b, args)
+	return reduce(op.add, args)
 
 def sub(*args):
 	"""Subtract all arguments after the first from the first one"""
 
-	return reduce(lambda a, b: a - b, args)
+	return reduce(op.sub, args)
 
 def mul(*args):
 	"""Multiply all the arguments together"""
 
-	return reduce(lambda a, b: a * b, args)
+	return reduce(op.mul, args)
 
 def truediv(*args):
 	"""Divide the first argument by all subsequent ones"""
 
-	return reduce(lambda a, b: a / b, args)
+	return reduce(op.truediv, args)
 
 def mod(*args):
 	"""Return the first argument mod the rest in order"""
 
-	return reduce(lambda a, b: a % b, args)
+	return reduce(op.mod, args)
 
 def less_than(*args):
 	"""Return True if all arguments are in ascending order"""
