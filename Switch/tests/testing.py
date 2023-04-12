@@ -1,4 +1,4 @@
-#!/mnt/c/Users/RedKnite/Appdata/local/programs/Python/Python38/python.exe
+#!/usr/bin/env python3
 
 """Tests for the Switch programming language"""
 
@@ -528,6 +528,19 @@ class TestFunctionDefinition(unittest.TestCase):
 			""",
 			"4")
 
+	@unittest.skip("need comparisons")
+	def test_fibo(self):
+		run(self,
+			"""
+			e$n
+			F@B 
+				W m$nOl B
+					e-nZl L
+
+			l
+			""",
+			"4")
+
 
 class TestFile(unittest.TestCase):
 	def setUp(self):
@@ -735,7 +748,11 @@ class TestCLI(unittest.TestCase):
 		from pathlib import Path
 
 	def test_main(self):
-		out = run_pro(["python", "-m", "Switch.switch", "c->nOl"], capture_output=True, encoding="utf-8")
+		out = run_pro(
+			["python", "-m", "Switch.switch", "c->nOl"],
+			capture_output=True,
+			encoding="utf-8"
+		)
 		self.assertEqual(out.returncode, 0)
 		self.assertTrue(out.stdout.startswith("Output:\n"))
 
