@@ -527,19 +527,29 @@ class TestFunctionDefinition(unittest.TestCase):
 			c F B c F . B c->n . l L f n OZZ l L f l
 			""",
 			"4")
+	
+	def test_return(self):
+		run(self,
+			"""
+			e . n cFB R OZO L f l l L
+			c->n.l
+			""",
+			"5")
 
-	@unittest.skip("need comparisons")
 	def test_fibo(self):
 		run(self,
 			"""
 			e$n
-			F@B 
-				W m$nOl B
-					e-nZl L
-
-			l
+			F@B
+				W j@nOZl B
+					R O L
+				w
+				R p c$n m@n Oll n c$n m@n OZll l L
+			f
+			l L
+			c->n c$n OZZZ l l L
 			""",
-			"4")
+			"34")
 
 
 class TestFile(unittest.TestCase):

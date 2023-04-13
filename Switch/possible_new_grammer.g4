@@ -7,9 +7,15 @@ while_loop  : while_test while_block                                ;
 while_test  : WHILE_LOOP_DELIM expr                                 ;
 while_block : BLOCK_DELIM line* WHILE_LOOP_END                      ;
 
-line  :  statement EOF | (statement? ENDLINE) | while_loop ;
 
-statement : expr | while_loop | return_statement;
+line: non_func_line | func_line ;
+
+non_func_line  :  statement EOF | (statement? ENDLINE) | while_loop ;
+
+func_line      :  func_statement | (func_statement? ENDLINE) ;
+
+func_statement : statement | return_statement ;
+statement : expr | while_loop ;
 
 return_statement  : FUNCTION_RETURN (expr)? ;
 
@@ -21,8 +27,9 @@ expr  : ( prim_expr
 		| function
 )       ;
 
+
 function   : FUNCTION_DELIM (NAME (ARG_DELIM NAME)*)?
-			 BLOCK_DELIM line* FUNCTION_END             ;
+			 BLOCK_DELIM func_line* FUNCTION_END             ;
 
 call       : CALL_OP expr (ARG_DELIM args)? END_CALL ;
 math_op    : MATH_OPS args END_CALL ;
@@ -31,7 +38,7 @@ access     : ACCESS_OP expr ARG_DELIM expr (ARG_DELIM expr)* END_CALL ;
 
 args : expr (ARG_DELIM expr)* ;
 
-prim_expr    : ( INT | FLOAT | NAME | STRING ) ;
+prim_expr    :  INT | FLOAT | NAME | STRING  ;
 
 STRING : STRING_START WHITESPACE* INT (NEXT_CHAR WHITESPACE* INT)* ;
 
@@ -57,7 +64,7 @@ WHILE_LOOP_END    : 'w'    ;
 FUNCTION_DELIM    : 'F'    ;
 FUNCTION_END      : 'f'    ;
 
-FUNCTION_RETURN   : 'R'  ;
+FUNCTION_RETURN   : 'ret'  ;
 
 STRING_START : 'S' ;
 NEXT_CHAR    : 's' ;

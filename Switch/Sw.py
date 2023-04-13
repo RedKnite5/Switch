@@ -197,7 +197,6 @@ class SwitchPrintListener(switchListener):
 			b"if isinstance(val, ModuleType) else val) "
 			b"for key, val in {**globals(), **locals()}.items()}) or ns_d['" + ctx.func_name + b"']")
 
-
 	def enterLine(self, ctx):
 		"""Indent normal lines as well as while loops"""
 
@@ -207,6 +206,9 @@ class SwitchPrintListener(switchListener):
 		"""Put newline after each line"""
 
 		self.st[-1] += b"\n"
+
+	def enterReturn_statement(self, ctx):
+		self.st[-1] += b"return "
 
 	def enterPrim_expr(self, ctx):
 		"""Evaluate INTEGERs, FLOATs, STRINGs, and NAMEs"""
