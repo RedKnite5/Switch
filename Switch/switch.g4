@@ -3,9 +3,9 @@ grammar switch;
 switch_file  : line* EOF ;
 
 
-while_loop  : while_test while_block                                ;
-while_test  : WHILE_LOOP_DELIM expr                                 ;
-while_block : BLOCK_DELIM line* WHILE_LOOP_END                      ;
+while_loop  : while_test while_block                       ;
+while_test  : WHILE_LOOP_DELIM expr                        ;
+while_block : BLOCK_DELIM line* WHILE_LOOP_END             ;
 
 line  :  statement EOF | (statement? ENDLINE) | while_loop ;
 
@@ -44,10 +44,10 @@ END_CALL  : 'l' ;
 fragment ONE   : ( [oO] )   ;
 fragment ZERO  : ( [zZ] )   ;
 
-MATH_OPS       : ( [tvupmjgq] )  ;
-ASSIGNMENT_OP  : 'e'             ;
-ACCESS_OP      : 'i'             ;
-CALL_OP        : 'c'             ;
+MATH_OPS          : ( [tvupmjgq] )  ;
+ASSIGNMENT_OP     : 'e'             ;
+ACCESS_OP         : 'i'             ;
+CALL_OP           : 'c'             ;
 
 BLOCK_DELIM       : 'B'    ;
 
@@ -57,10 +57,10 @@ WHILE_LOOP_END    : 'w'    ;
 FUNCTION_DELIM    : 'F'    ;
 FUNCTION_END      : 'f'    ;
 
-FUNCTION_RETURN   : 'R'  ;
+FUNCTION_RETURN   : 'R'    ;
 
-STRING_START : 'S' ;
-NEXT_CHAR    : 's' ;
+STRING_START      : 'S'    ;
+NEXT_CHAR         : 's'    ;
 
 INT    : ( ONE | ZERO) (ONE | ZERO | WHITESPACE)*   ;
 FLOAT  : INT 'd' INT                                ;
