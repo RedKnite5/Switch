@@ -8,6 +8,9 @@ from pathlib import Path
 from Switch.Sw import *
 from Switch.errors import *
 
+# run from directory with Switch directory in it with:
+# python -m Switch.switch
+
 def main():
 	"""Determine what the program should take input and what output is
 	wanted"""
