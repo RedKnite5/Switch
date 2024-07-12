@@ -14,6 +14,9 @@ from Switch.errors import *
 old_stdout = sys.stdout
 old_stderr = sys.stderr
 
+# run
+# python -m Switch.tests.testing
+# from root Switch Directory
 
 def run(tester, source_code, output, file=False):
 	"""Test that the source_code produces the desired output"""

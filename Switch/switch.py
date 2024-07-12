@@ -11,6 +11,9 @@ from Switch.errors import *
 # run from directory with Switch directory in it with:
 # python -m Switch.switch
 
+# to compile antlr4 grammar use:
+# antlr4 -v 4.13.1 -Dlanguage=Python3 switch.g4
+
 def main():
 	"""Determine what the program should take input and what output is
 	wanted"""
